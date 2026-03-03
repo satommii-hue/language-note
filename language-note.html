@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- saved from url=(0056)file:///Users/satomiplatz/Downloads/language-note_1.html -->
+<!-- saved from url=(0062)file:///Users/satomiplatz/Downloads/language-note_fixed_2.html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>語学ノート</title>
-<link href="./語学ノート_files/css2" rel="stylesheet">
+<link href="file:///Users/satomiplatz/Downloads/language-note_files/css2" rel="stylesheet">
 <style>
   :root {
     --bg: #faf8f3;
@@ -222,12 +222,12 @@
 </div>
 
 <div class="tab-bar">
-  <div class="tab" onclick="switchTab(&#39;list&#39;)" id="tab-list">フレーズ一覧</div>
+  <div class="tab active" onclick="switchTab(&#39;list&#39;)" id="tab-list">フレーズ一覧</div>
   <div class="tab" onclick="switchTab(&#39;add&#39;)" id="tab-add">追加する</div>
-  <div class="tab active" onclick="switchTab(&#39;settings&#39;)" id="tab-settings">設定</div>
+  <div class="tab" onclick="switchTab(&#39;settings&#39;)" id="tab-settings">設定</div>
 </div>
 
-<div class="panel" id="panel-list">
+<div class="panel active" id="panel-list">
   <div class="count-bar"><span id="total-count">5</span> フレーズ</div>
   <div id="phrases-container"><div><div class="category-title">— あいさつ</div><div class="phrase-card"><div class="phrase-ja">おはようございます</div>
             <div class="lang-row">
@@ -422,158 +422,33 @@
   </div>
 </div>
 
-<div class="panel active" id="panel-settings">
+<div class="panel" id="panel-settings">
+  <div class="settings-section">
+    <div class="settings-label">// DeepL API キー</div>
+    <div class="form-card">
+      <div class="form-row">
+        <div class="form-label">
+          <span class="form-label-text">DeepL API キー</span>
+        </div>
+        <input type="password" id="deepl-api-key" class="form-input" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx" oninput="saveDeepLKey()">
+      </div>
+      <div class="voice-note">🔑 <a href="https://www.deepl.com/ja/pro-api" target="_blank" style="color:var(--accent)">DeepL公式サイト</a>で無料アカウントを作成するとAPIキーが取得できます。月50万文字まで無料。キーは自動保存されます。</div>
+    </div>
+  </div>
+
   <div class="settings-section">
     <div class="settings-label">// 表示中の言語</div>
-    <div id="current-langs-list">
-      <div class="lang-setting-row fixed">
-        <span style="font-size:16px;color:var(--border-dark);padding:2px 4px">☰</span>
-        <span class="lang-label" style="background:var(--tag-ja);color:var(--text-muted)">日</span>
-        <div class="lang-setting-info">
-          <div class="lang-setting-name">日本語（固定）</div>
-          <div class="lang-setting-code">ja-JP</div>
-        </div>
-      </div>
-    
-      <div class="lang-setting-row" draggable="true" data-code="en" data-index="0" ondragstart="onDragStart(event,0)" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,0)" ondragend="onDragEnd(event)">
-        <span class="drag-handle" title="ドラッグして並び替え">☰</span>
-        <span class="lang-label" style="background:#e8f0f8;color:#1a4a6e">EN</span>
-        <div class="lang-setting-info">
-          <div class="lang-setting-name">English (British)</div>
-          <div class="lang-setting-code">en-GB</div>
-        </div>
-        <button class="remove-btn" onclick="hideLang(&#39;en&#39;)">非表示</button>
-      </div>
-      <div class="lang-setting-row" draggable="true" data-code="de" data-index="1" ondragstart="onDragStart(event,1)" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,1)" ondragend="onDragEnd(event)">
-        <span class="drag-handle" title="ドラッグして並び替え">☰</span>
-        <span class="lang-label" style="background:#e8f3e8;color:#2d5a1b">DE</span>
-        <div class="lang-setting-info">
-          <div class="lang-setting-name">Deutsch</div>
-          <div class="lang-setting-code">de-DE</div>
-        </div>
-        <button class="remove-btn" onclick="hideLang(&#39;de&#39;)">非表示</button>
-      </div>
-      <div class="lang-setting-row" draggable="true" data-code="fr" data-index="2" ondragstart="onDragStart(event,2)" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,2)" ondragend="onDragEnd(event)">
-        <span class="drag-handle" title="ドラッグして並び替え">☰</span>
-        <span class="lang-label" style="background:#f8e8ef;color:#6e1a3a">FR</span>
-        <div class="lang-setting-info">
-          <div class="lang-setting-name">Français</div>
-          <div class="lang-setting-code">fr-FR</div>
-        </div>
-        <button class="remove-btn" onclick="hideLang(&#39;fr&#39;)">非表示</button>
-      </div>
-      <div class="lang-setting-row" draggable="true" data-code="nl" data-index="3" ondragstart="onDragStart(event,3)" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,3)" ondragend="onDragEnd(event)">
-        <span class="drag-handle" title="ドラッグして並び替え">☰</span>
-        <span class="lang-label" style="background:#f8f0e0;color:#5a3a0a">NL</span>
-        <div class="lang-setting-info">
-          <div class="lang-setting-name">Nederlands</div>
-          <div class="lang-setting-code">nl-NL</div>
-        </div>
-        <button class="remove-btn" onclick="hideLang(&#39;nl&#39;)">非表示</button>
-      </div>
-      <div class="lang-setting-row" draggable="true" data-code="sv" data-index="4" ondragstart="onDragStart(event,4)" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,4)" ondragend="onDragEnd(event)">
-        <span class="drag-handle" title="ドラッグして並び替え">☰</span>
-        <span class="lang-label" style="background:#e8eef8;color:#1a3d6e">SV</span>
-        <div class="lang-setting-info">
-          <div class="lang-setting-name">Svenska</div>
-          <div class="lang-setting-code">sv-SE</div>
-        </div>
-        <button class="remove-btn" onclick="hideLang(&#39;sv&#39;)">非表示</button>
-      </div></div>
+    <div id="current-langs-list"></div>
   </div>
 
   <div class="settings-section">
     <div class="settings-label">// 非表示の言語</div>
-    <div id="hidden-langs-list"><div style="font-size:12px;color:var(--text-light);padding:8px 4px">非表示の言語はありません</div></div>
+    <div id="hidden-langs-list"></div>
   </div>
 
   <div class="settings-section">
     <div class="settings-label">// 言語を新たに追加</div>
-    <div class="available-list" id="available-langs-list">
-        <div class="available-item added" onclick="">
-          <div>
-            <div class="available-item-name">English</div>
-            <div class="available-item-code">EN · en-GB</div>
-          </div>
-          <span class="add-icon">✓</span>
-        </div>
-        <div class="available-item added" onclick="">
-          <div>
-            <div class="available-item-name">Deutsch</div>
-            <div class="available-item-code">DE · de-DE</div>
-          </div>
-          <span class="add-icon">✓</span>
-        </div>
-        <div class="available-item added" onclick="">
-          <div>
-            <div class="available-item-name">Français</div>
-            <div class="available-item-code">FR · fr-FR</div>
-          </div>
-          <span class="add-icon">✓</span>
-        </div>
-        <div class="available-item added" onclick="">
-          <div>
-            <div class="available-item-name">Nederlands</div>
-            <div class="available-item-code">NL · nl-NL</div>
-          </div>
-          <span class="add-icon">✓</span>
-        </div>
-        <div class="available-item added" onclick="">
-          <div>
-            <div class="available-item-name">Svenska</div>
-            <div class="available-item-code">SV · sv-SE</div>
-          </div>
-          <span class="add-icon">✓</span>
-        </div>
-        <div class="available-item " onclick="addLang(&#39;es&#39;)">
-          <div>
-            <div class="available-item-name">Español</div>
-            <div class="available-item-code">ES · es-ES</div>
-          </div>
-          <span class="add-icon">＋</span>
-        </div>
-        <div class="available-item " onclick="addLang(&#39;it&#39;)">
-          <div>
-            <div class="available-item-name">Italiano</div>
-            <div class="available-item-code">IT · it-IT</div>
-          </div>
-          <span class="add-icon">＋</span>
-        </div>
-        <div class="available-item " onclick="addLang(&#39;pt&#39;)">
-          <div>
-            <div class="available-item-name">Português</div>
-            <div class="available-item-code">PT · pt-PT</div>
-          </div>
-          <span class="add-icon">＋</span>
-        </div>
-        <div class="available-item " onclick="addLang(&#39;ko&#39;)">
-          <div>
-            <div class="available-item-name">한국어</div>
-            <div class="available-item-code">KO · ko-KR</div>
-          </div>
-          <span class="add-icon">＋</span>
-        </div>
-        <div class="available-item " onclick="addLang(&#39;zh&#39;)">
-          <div>
-            <div class="available-item-name">中文</div>
-            <div class="available-item-code">ZH · zh-CN</div>
-          </div>
-          <span class="add-icon">＋</span>
-        </div>
-        <div class="available-item " onclick="addLang(&#39;ru&#39;)">
-          <div>
-            <div class="available-item-name">Русский</div>
-            <div class="available-item-code">RU · ru-RU</div>
-          </div>
-          <span class="add-icon">＋</span>
-        </div>
-        <div class="available-item " onclick="addLang(&#39;ar&#39;)">
-          <div>
-            <div class="available-item-name">العربية</div>
-            <div class="available-item-code">AR · ar-SA</div>
-          </div>
-          <span class="add-icon">＋</span>
-        </div></div>
+    <div class="available-list" id="available-langs-list"></div>
   </div>
 </div>
 
@@ -590,7 +465,7 @@
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast">データを読み込みました ✓</div>
 
 <script>
   // ── 全対応言語マスター ──
@@ -690,25 +565,90 @@
     document.getElementById('total-count').textContent = phrases.length;
   }
 
+  // ── DeepL APIキー管理 ──
+  function saveDeepLKey() {
+    const key = document.getElementById('deepl-api-key').value;
+    try { localStorage.setItem('deepl-api-key', key); } catch(e) {}
+  }
+
+  function loadDeepLKey() {
+    try {
+      const key = localStorage.getItem('deepl-api-key') || '';
+      const el = document.getElementById('deepl-api-key');
+      if (el) el.value = key;
+      return key;
+    } catch(e) { return ''; }
+  }
+
+  // DeepLの言語コードマッピング
+  const DEEPL_LANG_MAP = {
+    'ja': 'JA',
+    'en': 'EN-GB',
+    'de': 'DE',
+    'fr': 'FR',
+    'nl': 'NL',
+    'sv': 'SV',
+    'es': 'ES',
+    'it': 'IT',
+    'pt': 'PT-PT',
+    'ko': 'KO',
+    'zh': 'ZH',
+    'ru': 'RU',
+  };
+
+  // DeepLで1テキストを1言語に翻訳
+  async function translateWithDeepL(text, targetCode, apiKey) {
+    const targetLang = DEEPL_LANG_MAP[targetCode] || targetCode.toUpperCase();
+    // 無料プラン（:fx）か有料プランかでURLが変わる
+    const isFree = apiKey.endsWith(':fx');
+    const url = isFree
+      ? 'https://api-free.deepl.com/v2/translate'
+      : 'https://api.deepl.com/v2/translate';
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'DeepL-Auth-Key ' + apiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        text: [text],
+        target_lang: targetLang,
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error('DeepL error: ' + res.status + ' ' + err);
+    }
+    const data = await res.json();
+    return data.translations[0].text;
+  }
+
   // ── 自動翻訳 ──
   async function autoTranslate() {
-    // どの入力欄に何か入っているか確認
+    const apiKey = loadDeepLKey();
+    if (!apiKey) {
+      showToast('設定画面でDeepL APIキーを入力してください');
+      switchTab('settings');
+      return;
+    }
+
     const jaEl = document.getElementById('input-ja');
     const jaText = jaEl ? jaEl.value.trim() : '';
 
-    // 入力されている言語を探す（日本語 or アクティブ言語）
     let sourceText = '';
-    let sourceLangName = '';
+    let sourceCode = 'ja';
 
     if (jaText) {
       sourceText = jaText;
-      sourceLangName = '日本語';
+      sourceCode = 'ja';
     } else {
       for (const lang of getActiveLangs()) {
         const el = document.getElementById('input-' + lang.code);
         if (el && el.value.trim()) {
           sourceText = el.value.trim();
-          sourceLangName = lang.name;
+          sourceCode = lang.code;
           break;
         }
       }
@@ -723,14 +663,13 @@
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> 翻訳中...';
 
-    // 翻訳先の言語リストを作成
+    // 翻訳先リスト（空欄の欄だけ）
     const targets = [];
-    if (!jaText) targets.push({ code: 'ja', name: '日本語' });
+    if (sourceCode !== 'ja' && jaEl && !jaEl.value.trim()) targets.push('ja');
     getActiveLangs().forEach(lang => {
+      if (lang.code === sourceCode) return;
       const el = document.getElementById('input-' + lang.code);
-      if (!el || !el.value.trim()) {
-        targets.push({ code: lang.code, name: lang.britishOnly ? lang.name + ' (British English)' : lang.name });
-      }
+      if (!el || !el.value.trim()) targets.push(lang.code);
     });
 
     if (targets.length === 0) {
@@ -740,57 +679,38 @@
       return;
     }
 
-    const targetList = targets.map(t => `- ${t.name} (code: ${t.code})`).join('\n');
-    const prompt = `以下のフレーズを指定された言語に翻訳してください。
-    
-元のフレーズ（${sourceLangName}）: "${sourceText}"
-
-翻訳先:
-${targetList}
-
-重要なルール:
-- 英語はBritish Englishで翻訳すること
-- 日常会話・自然な表現を使うこと
-- 必ず以下のJSON形式のみで返答すること。説明や前置きは不要
-- JSONのキーは言語コード（jaなど）を使うこと
-
-{"ja":"...","en":"...","de":"..."}`;
-
     try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{ role: 'user', content: prompt }]
+      // 並列で全言語翻訳
+      const results = await Promise.all(
+        targets.map(async code => {
+          const translated = await translateWithDeepL(sourceText, code, apiKey);
+          return { code, translated };
         })
-      });
+      );
 
-      const data = await response.json();
-      const raw = data.content.map(c => c.text || '').join('');
-      const clean = raw.replace(/```json|```/g, '').trim();
-      const result = JSON.parse(clean);
-
-      // 結果をフォームに反映
-      if (result.ja && jaEl) {
-        jaEl.value = result.ja;
-        jaEl.classList.add('input-translated');
-      }
-      getActiveLangs().forEach(lang => {
-        if (result[lang.code]) {
-          const el = document.getElementById('input-' + lang.code);
+      results.forEach(({ code, translated }) => {
+        if (code === 'ja' && jaEl) {
+          jaEl.value = translated;
+          jaEl.classList.add('input-translated');
+        } else {
+          const el = document.getElementById('input-' + code);
           if (el && !el.value.trim()) {
-            el.value = result[lang.code];
+            el.value = translated;
             el.classList.add('input-translated');
           }
         }
       });
 
-      showToast('翻訳しました ✓');
+      showToast('DeepLで翻訳しました ✓');
     } catch (e) {
-      showToast('翻訳に失敗しました');
       console.error(e);
+      if (e.message.includes('403')) {
+        showToast('APIキーが正しくありません');
+      } else if (e.message.includes('456')) {
+        showToast('DeepLの翻訳文字数上限に達しました');
+      } else {
+        showToast('翻訳に失敗しました：' + e.message);
+      }
     }
 
     btn.disabled = false;
@@ -1233,6 +1153,7 @@ ${langList}
   updateHeader();
   renderPhrases();
   renderLangInputs();
+  loadDeepLKey();
 
   if (hasSavedData) {
     showToast('データを読み込みました ✓');
