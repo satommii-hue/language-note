@@ -607,11 +607,6 @@
 
   // ── 自動翻訳（DeepL API） ──
   async function autoTranslate() {
-    if (!deeplApiKey) {
-      openApiKeyModal();
-      return;
-    }
-
     const jaEl = document.getElementById('input-ja');
     const jaText = jaEl ? jaEl.value.trim() : '';
 
@@ -657,35 +652,26 @@
       return;
     }
 
-    // DeepLは1リクエスト1言語なので並列で叩く
-    // Free APIのエンドポイントは api-free.deepl.com、有料は api.deepl.com
-    const isFree = deeplApiKey.endsWith(':fx');
-    const baseUrl = isFree
-      ? 'https://api-free.deepl.com/v2/translate'
-      : 'https://api.deepl.com/v2/translate';
-
+    // Vercelプロキシ経由でDeepLを叩く（CORSを回避）
     try {
       const results = await Promise.all(
         targets.map(async (code) => {
           const deepLTarget = DEEPL_LANG_MAP[code];
           if (!deepLTarget) return null;
 
-          const body = new URLSearchParams({
-            auth_key: deeplApiKey,
-            text: sourceText,
-            target_lang: deepLTarget,
-          });
-          if (sourceLangCode) body.append('source_lang', sourceLangCode.split('-')[0]);
-
-          const res = await fetch(baseUrl, {
+          const res = await fetch('/api/translate', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: body.toString(),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              text: sourceText,
+              target_lang: deepLTarget,
+              source_lang: sourceLangCode ? sourceLangCode.split('-')[0] : undefined,
+            }),
           });
 
           if (!res.ok) {
             const err = await res.json().catch(() => ({}));
-            throw new Error(`DeepL error ${res.status}: ${err.message || ''}`);
+            throw new Error(`DeepL error ${res.status}: ${err.error || ''}`);
           }
 
           const data = await res.json();
@@ -710,15 +696,7 @@
       showToast('翻訳しました ✓');
     } catch (e) {
       console.error(e);
-      if (e.message.includes('403') || e.message.includes('456')) {
-        showToast('APIキーが無効か使用量超過です');
-        openApiKeyModal();
-      } else if (e.message.includes('Failed to fetch')) {
-        showToast('接続エラー。APIキーを確認してください');
-        openApiKeyModal();
-      } else {
-        showToast('翻訳に失敗しました');
-      }
+      showToast('翻訳に失敗しました。しばらく待ってから再試行してください。');
     }
 
     btn.disabled = false;
