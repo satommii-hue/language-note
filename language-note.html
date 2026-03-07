@@ -687,10 +687,9 @@
         if (el) {
           el.value = r.text;
           el.classList.add('input-translated');
-        } else {
-          // 非表示言語はpendingに保存
-          window._pendingTranslations[r.code] = r.text;
         }
+        // 翻訳結果は全言語分pendingに保存（非表示言語も含む）
+        window._pendingTranslations[r.code] = r.text;
       });
 
       showToast('翻訳しました ✓');
@@ -725,7 +724,7 @@
     if (!ja) { showToast('日本語を入力してください'); return; }
 
     const obj = { ja, category: document.getElementById('input-category').value };
-    // 表示中の言語はinputから取得
+    // 全登録言語のinputから取得（表示中のみ）
     getActiveLangs().forEach(lang => {
       const el = document.getElementById('input-' + lang.code);
       obj[lang.code] = el ? el.value.trim() : '';
@@ -733,7 +732,7 @@
     // 非表示言語は_pendingTranslationsから取得
     if (window._pendingTranslations) {
       hiddenLangCodes.forEach(code => {
-        if (window._pendingTranslations[code]) {
+        if (window._pendingTranslations[code] && !obj[code]) {
           obj[code] = window._pendingTranslations[code];
         }
       });
