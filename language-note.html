@@ -485,18 +485,18 @@
     { code: 'ar', label: 'AR', name: 'العربية',     bcp47: 'ar-SA',  color: '#3d3d1a', bg: '#f4f4e0' },
   ];
 
-  // ── 初期設定：使用する言語 ──
-  let activeLangCodes = ['en', 'de', 'fr', 'nl', 'sv'];
+  // ── 全言語を使用（表示/非表示はhiddenLangCodesで管理）──
+  const activeLangCodes = ALL_LANGS.map(l => l.code);
   // 非表示言語（データは保持、画面には出さない）
   let hiddenLangCodes = [];
 
   // ── フレーズデータ ──
   let phrases = [
-    { ja:"おはようございます", en:"Good morning",      de:"Guten Morgen",        fr:"Bonjour",                   nl:"Goedemorgen",      sv:"God morgon",       category:"あいさつ" },
-    { ja:"ありがとうございます", en:"Thank you very much", de:"Vielen Dank",        fr:"Merci beaucoup",            nl:"Hartelijk dank",   sv:"Tack så mycket",  category:"あいさつ" },
-    { ja:"元気ですか？",       en:"How are you?",       de:"Wie geht es Ihnen?",  fr:"Comment allez-vous ?",      nl:"Hoe gaat het?",    sv:"Hur mår du?",      category:"あいさつ" },
-    { ja:"これはいくらですか？", en:"How much is this?",  de:"Wie viel kostet das?", fr:"C'est combien ?",          nl:"Hoeveel kost dit?", sv:"Hur mycket kostar det?", category:"日常会話" },
-    { ja:"お水をください",      en:"Water, please",      de:"Wasser, bitte",       fr:"De l'eau, s'il vous plaît", nl:"Water, alsjeblieft", sv:"Vatten, tack",    category:"食べ物・飲み物" },
+    { ja:"おはようございます", en:"Good morning",       de:"Guten Morgen",         fr:"Bonjour",                    nl:"Goedemorgen",       sv:"God morgon",             es:"Buenos días",         it:"Buongiorno",          pt:"Bom dia",              ko:"좋은 아침이에요",     zh:"早上好",       ru:"Доброе утро",      ar:"صباح الخير",      category:"あいさつ" },
+    { ja:"ありがとうございます", en:"Thank you very much", de:"Vielen Dank",         fr:"Merci beaucoup",             nl:"Hartelijk dank",    sv:"Tack så mycket",         es:"Muchas gracias",      it:"Grazie mille",        pt:"Muito obrigado",       ko:"감사합니다",         zh:"非常感谢",     ru:"Большое спасибо",  ar:"شكراً جزيلاً",    category:"あいさつ" },
+    { ja:"元気ですか？",        en:"How are you?",        de:"Wie geht es Ihnen?",   fr:"Comment allez-vous ?",       nl:"Hoe gaat het?",     sv:"Hur mår du?",            es:"¿Cómo está usted?",  it:"Come sta?",           pt:"Como vai?",            ko:"잘 지내세요?",       zh:"你好吗？",     ru:"Как дела?",        ar:"كيف حالك؟",       category:"あいさつ" },
+    { ja:"これはいくらですか？",  en:"How much is this?",  de:"Wie viel kostet das?", fr:"C'est combien ?",            nl:"Hoeveel kost dit?", sv:"Hur mycket kostar det?", es:"¿Cuánto cuesta esto?", it:"Quanto costa questo?", pt:"Quanto custa isto?",  ko:"이건 얼마예요?",     zh:"这个多少钱？",  ru:"Сколько это стоит?", ar:"بكم هذا؟",       category:"日常会話" },
+    { ja:"お水をください",       en:"Water, please",      de:"Wasser, bitte",        fr:"De l'eau, s'il vous plaît",  nl:"Water, alsjeblieft", sv:"Vatten, tack",          es:"Agua, por favor",     it:"Acqua, per favore",   pt:"Água, por favor",      ko:"물 주세요",          zh:"请给我水",     ru:"Воды, пожалуйста", ar:"ماء من فضلك",     category:"食べ物・飲み物" },
   ];
 
   let currentBtn = null;
@@ -504,7 +504,7 @@
   // ── ヘルパー ──
   function getLang(code) { return ALL_LANGS.find(l => l.code === code); }
   function getActiveLangs() { return activeLangCodes.filter(c => !hiddenLangCodes.includes(c)).map(getLang).filter(Boolean); }
-  function getAllRegisteredLangs() { return activeLangCodes.map(getLang).filter(Boolean); }
+  function getAllRegisteredLangs() { return ALL_LANGS; }
 
   function escapeAttr(str) {
     return (str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
@@ -870,50 +870,36 @@ ${langList}
         </div>
       </div>`;
     const visibleLangs = getActiveLangs();
-    visibleLangs.forEach((lang, i) => {
-      html += `<div class="lang-setting-row" draggable="true" data-code="${lang.code}" data-index="${i}"
-        ondragstart="onDragStart(event,'${lang.code}')"
-        ondragover="onDragOver(event)"
-        ondragleave="onDragLeave(event)"
-        ondrop="onDrop(event,'${lang.code}')"
-        ondragend="onDragEnd(event)">
-        <span class="drag-handle" title="ドラッグして並び替え">☰</span>
-        <span class="lang-label" style="background:${lang.bg};color:${lang.color}">${lang.label}</span>
-        <div class="lang-setting-info">
-          <div class="lang-setting-name">${lang.name}${lang.britishOnly ? ' (British)' : ''}</div>
-          <div class="lang-setting-code">${lang.bcp47} · 表示中</div>
-        </div>
-        <button class="remove-btn" onclick="hideLang('${lang.code}')">非表示</button>
-      </div>`;
-    });
-    const hiddenLangs = hiddenLangCodes.map(getLang).filter(Boolean);
-    hiddenLangs.forEach(lang => {
-      html += `<div class="lang-setting-row" style="opacity:0.6">
-        <span style="width:24px;flex-shrink:0"></span>
-        <span class="lang-label" style="background:${lang.bg};color:${lang.color}">${lang.label}</span>
-        <div class="lang-setting-info">
-          <div class="lang-setting-name">${lang.name}${lang.britishOnly ? ' (British)' : ''}</div>
-          <div class="lang-setting-code">${lang.bcp47} · 非表示（データ保持中）</div>
-        </div>
-        <button class="remove-btn" style="color:var(--accent);border-color:var(--accent)" onclick="showLang('${lang.code}')">表示する</button>
-      </div>`;
-    });
-    html += `<div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-light);margin:20px 2px 10px">// 未追加の言語</div>`;
-    const unregistered = ALL_LANGS.filter(l => !activeLangCodes.includes(l.code));
-    if (unregistered.length === 0) {
-      html += `<div style="font-size:12px;color:var(--text-light);padding:8px 4px">すべての言語が追加済みです</div>`;
-    } else {
-      unregistered.forEach(lang => {
-        html += `<div class="lang-setting-row" style="cursor:pointer;border-style:dashed" onclick="addLang('${lang.code}')">
-          <span style="width:24px;flex-shrink:0;text-align:center;color:var(--accent);font-size:18px">＋</span>
+    const allForeignLangs = ALL_LANGS.filter(l => l.code !== 'ja');
+    allForeignLangs.forEach((lang, i) => {
+      const isHidden = hiddenLangCodes.includes(lang.code);
+      if (!isHidden) {
+        html += `<div class="lang-setting-row" draggable="true" data-code="${lang.code}" data-index="${visibleLangs.findIndex(l=>l.code===lang.code)}"
+          ondragstart="onDragStart(event,'${lang.code}')"
+          ondragover="onDragOver(event)"
+          ondragleave="onDragLeave(event)"
+          ondrop="onDrop(event,'${lang.code}')"
+          ondragend="onDragEnd(event)">
+          <span class="drag-handle" title="ドラッグして並び替え">☰</span>
           <span class="lang-label" style="background:${lang.bg};color:${lang.color}">${lang.label}</span>
           <div class="lang-setting-info">
-            <div class="lang-setting-name">${lang.name}</div>
-            <div class="lang-setting-code">${lang.bcp47}</div>
+            <div class="lang-setting-name">${lang.name}${lang.britishOnly ? ' (British)' : ''}</div>
+            <div class="lang-setting-code">${lang.bcp47} · 表示中</div>
           </div>
+          <button class="remove-btn" onclick="hideLang('${lang.code}')">非表示</button>
         </div>`;
-      });
-    }
+      } else {
+        html += `<div class="lang-setting-row" style="opacity:0.55">
+          <span style="width:24px;flex-shrink:0"></span>
+          <span class="lang-label" style="background:${lang.bg};color:${lang.color}">${lang.label}</span>
+          <div class="lang-setting-info">
+            <div class="lang-setting-name">${lang.name}${lang.britishOnly ? ' (British)' : ''}</div>
+            <div class="lang-setting-code">${lang.bcp47} · 非表示</div>
+          </div>
+          <button class="remove-btn" style="color:var(--accent);border-color:var(--accent)" onclick="showLang('${lang.code}')">表示する</button>
+        </div>`;
+      }
+    });
     allEl.innerHTML = html;
     setupTouchDrag();
   }
@@ -1041,17 +1027,6 @@ ${langList}
     });
   }
 
-  function addLang(code) {
-    if (activeLangCodes.includes(code)) return;
-    activeLangCodes.push(code);
-    saveData();
-    updateHeader();
-    renderPhrases();
-    renderLangInputs();
-    renderSettings();
-    showToast(getLang(code).name + ' を追加しました');
-  }
-
   function hideLang(code) {
     if (!hiddenLangCodes.includes(code)) hiddenLangCodes.push(code);
     saveData();
@@ -1121,7 +1096,6 @@ ${langList}
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         phrases,
-        activeLangCodes,
         hiddenLangCodes,
       }));
     } catch(e) {
@@ -1135,7 +1109,6 @@ ${langList}
       if (!raw) return false;
       const data = JSON.parse(raw);
       if (data.phrases) phrases = data.phrases;
-      if (data.activeLangCodes) activeLangCodes = data.activeLangCodes;
       if (data.hiddenLangCodes) hiddenLangCodes = data.hiddenLangCodes;
       return true;
     } catch(e) {
