@@ -77,8 +77,19 @@
   .category-title { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-light); margin: 24px 0 8px 2px; }
 
   .phrase-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 6px; margin-bottom: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-  .phrase-ja { padding: 12px 14px; font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .phrase-ja {
+    padding: 12px 14px; font-size: 14px; font-weight: 500;
+    display: flex; align-items: center; gap: 8px; cursor: pointer;
+    user-select: none; -webkit-user-select: none;
+  }
   .phrase-ja::before { content: '日'; font-family: 'DM Mono', monospace; font-size: 8px; color: var(--text-muted); background: var(--tag-ja); padding: 2px 5px; border-radius: 2px; flex-shrink: 0; }
+  .phrase-ja-text { flex: 1; }
+  .phrase-expand-icon { font-size: 10px; color: var(--text-light); transition: transform 0.2s; flex-shrink: 0; }
+  .phrase-card.expanded .phrase-expand-icon { transform: rotate(180deg); }
+  .phrase-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+  .phrase-tag { font-family: 'DM Mono', monospace; font-size: 8px; padding: 2px 6px; border-radius: 2px; background: var(--tag-ja); color: var(--text-muted); }
+  .phrase-langs { display: none; border-top: 1px solid var(--border); }
+  .phrase-card.expanded .phrase-langs { display: block; }
 
   .lang-row { display: flex; align-items: center; padding: 11px 14px; border-bottom: 1px solid var(--border); gap: 10px; }
   .lang-row:last-child { border-bottom: none; }
@@ -87,6 +98,15 @@
   .speak-btn { background: none; border: 1px solid var(--border); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.15s; font-size: 12px; color: var(--text-muted); }
   .speak-btn:active { border-color: var(--accent); color: var(--accent); transform: scale(0.9); }
   .speak-btn.playing { background: var(--accent); border-color: var(--accent); color: white; }
+
+  /* ── Tag filter ── */
+  .tag-filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .tag-filter-btn {
+    font-family: 'DM Mono', monospace; font-size: 9px; padding: 4px 10px; border-radius: 20px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text-muted);
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .tag-filter-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
 
   /* ── Add form ── */
   .section-title { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
@@ -229,6 +249,7 @@
 
 <div class="panel active" id="panel-list">
   <div class="count-bar"><span id="total-count">5</span> フレーズ</div>
+  <div class="tag-filter-bar" id="tag-filter-bar"></div>
   <div id="phrases-container"><div><div class="category-title">— あいさつ</div><div class="phrase-card"><div class="phrase-ja">おはようございます</div>
             <div class="lang-row">
               <span class="lang-label" style="background:#e8f0f8;color:#1a4a6e">EN</span>
@@ -407,15 +428,8 @@
         <input type="text" id="input-sv" class="form-input" placeholder="" oninput="this.classList.remove(&#39;input-translated&#39;)">
       </div></div>
     <div class="form-row">
-      <div class="form-label"><span class="form-label-text">カテゴリ</span></div>
-      <select id="input-category" class="form-select">
-        <option value="あいさつ">あいさつ</option>
-        <option value="日常会話">日常会話</option>
-        <option value="感情・気持ち">感情・気持ち</option>
-        <option value="食べ物・飲み物">食べ物・飲み物</option>
-        <option value="移動・場所">移動・場所</option>
-        <option value="その他">その他</option>
-      </select>
+      <div class="form-label"><span class="form-label-text">タグ（スペース区切りで複数入力可）</span></div>
+      <input type="text" id="input-tags" class="form-input" placeholder="例：あいさつ 毎日 重要">
     </div>
     <button class="btn-primary" onclick="addPhrase()">追加する</button>
     <div class="voice-note">🔊 発音はブラウザの音声合成を使用。Safari・Chromeで動作します。</div>
@@ -449,6 +463,23 @@
     <div class="modal-actions">
       <button class="btn-secondary" onclick="closeApiKeyModal()">キャンセル</button>
       <button class="btn-modal-primary" onclick="saveApiKey()">保存する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit phrase modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title">フレーズを編集</div>
+    <div class="modal-sub" id="edit-modal-category"></div>
+    <div id="edit-fields"></div>
+    <button class="translate-btn" id="edit-translate-btn" onclick="editAutoTranslate()" style="margin-top:4px">
+      ✨ 空欄を自動翻訳する
+    </button>
+    <div class="modal-actions">
+      <button class="btn-secondary" style="color:var(--danger);border-color:var(--danger)" onclick="deletePhrase()">削除</button>
+      <button class="btn-secondary" onclick="closeEditModal()">キャンセル</button>
+      <button class="btn-modal-primary" onclick="saveEdit()">保存する</button>
     </div>
   </div>
 </div>
@@ -492,11 +523,11 @@
 
   // ── フレーズデータ ──
   let phrases = [
-    { ja:"おはようございます", en:"Good morning",       de:"Guten Morgen",         fr:"Bonjour",                    nl:"Goedemorgen",       sv:"God morgon",             es:"Buenos días",         it:"Buongiorno",          pt:"Bom dia",              ko:"좋은 아침이에요",     zh:"早上好",       ru:"Доброе утро",      ar:"صباح الخير",      category:"あいさつ" },
-    { ja:"ありがとうございます", en:"Thank you very much", de:"Vielen Dank",         fr:"Merci beaucoup",             nl:"Hartelijk dank",    sv:"Tack så mycket",         es:"Muchas gracias",      it:"Grazie mille",        pt:"Muito obrigado",       ko:"감사합니다",         zh:"非常感谢",     ru:"Большое спасибо",  ar:"شكراً جزيلاً",    category:"あいさつ" },
-    { ja:"元気ですか？",        en:"How are you?",        de:"Wie geht es Ihnen?",   fr:"Comment allez-vous ?",       nl:"Hoe gaat het?",     sv:"Hur mår du?",            es:"¿Cómo está usted?",  it:"Come sta?",           pt:"Como vai?",            ko:"잘 지내세요?",       zh:"你好吗？",     ru:"Как дела?",        ar:"كيف حالك؟",       category:"あいさつ" },
-    { ja:"これはいくらですか？",  en:"How much is this?",  de:"Wie viel kostet das?", fr:"C'est combien ?",            nl:"Hoeveel kost dit?", sv:"Hur mycket kostar det?", es:"¿Cuánto cuesta esto?", it:"Quanto costa questo?", pt:"Quanto custa isto?",  ko:"이건 얼마예요?",     zh:"这个多少钱？",  ru:"Сколько это стоит?", ar:"بكم هذا؟",       category:"日常会話" },
-    { ja:"お水をください",       en:"Water, please",      de:"Wasser, bitte",        fr:"De l'eau, s'il vous plaît",  nl:"Water, alsjeblieft", sv:"Vatten, tack",          es:"Agua, por favor",     it:"Acqua, per favore",   pt:"Água, por favor",      ko:"물 주세요",          zh:"请给我水",     ru:"Воды, пожалуйста", ar:"ماء من فضلك",     category:"食べ物・飲み物" },
+    { ja:"おはようございます", en:"Good morning",       de:"Guten Morgen",         fr:"Bonjour",                    nl:"Goedemorgen",       sv:"God morgon",             es:"Buenos días",         it:"Buongiorno",          pt:"Bom dia",              ko:"좋은 아침이에요",     zh:"早上好",       ru:"Доброе утро",      ar:"صباح الخير",      tags:["あいさつ"] },
+    { ja:"ありがとうございます", en:"Thank you very much", de:"Vielen Dank",         fr:"Merci beaucoup",             nl:"Hartelijk dank",    sv:"Tack så mycket",         es:"Muchas gracias",      it:"Grazie mille",        pt:"Muito obrigado",       ko:"감사합니다",         zh:"非常感谢",     ru:"Большое спасибо",  ar:"شكراً جزيلاً",    tags:["あいさつ"] },
+    { ja:"元気ですか？",        en:"How are you?",        de:"Wie geht es Ihnen?",   fr:"Comment allez-vous ?",       nl:"Hoe gaat het?",     sv:"Hur mår du?",            es:"¿Cómo está usted?",  it:"Come sta?",           pt:"Como vai?",            ko:"잘 지내세요?",       zh:"你好吗？",     ru:"Как дела?",        ar:"كيف حالك؟",       tags:["あいさつ"] },
+    { ja:"これはいくらですか？",  en:"How much is this?",  de:"Wie viel kostet das?", fr:"C'est combien ?",            nl:"Hoeveel kost dit?", sv:"Hur mycket kostar det?", es:"¿Cuánto cuesta esto?", it:"Quanto costa questo?", pt:"Quanto custa isto?",  ko:"이건 얼마예요?",     zh:"这个多少钱？",  ru:"Сколько это стоит?", ar:"بكم هذا؟",       tags:["日常会話"] },
+    { ja:"お水をください",       en:"Water, please",      de:"Wasser, bitte",        fr:"De l'eau, s'il vous plaît",  nl:"Water, alsjeblieft", sv:"Vatten, tack",          es:"Agua, por favor",     it:"Acqua, per favore",   pt:"Água, por favor",      ko:"물 주세요",          zh:"请给我水",     ru:"Воды, пожалуйста", ar:"ماء من فضلك",     tags:["食べ物・飲み物"] },
   ];
 
   let currentBtn = null;
@@ -531,39 +562,94 @@
   }
 
   // ── フレーズ一覧 ──
-  function groupByCategory(arr) {
-    return arr.reduce((acc, p) => { if (!acc[p.category]) acc[p.category]=[]; acc[p.category].push(p); return acc; }, {});
+  let activeTagFilter = null;
+
+  function getAllTags() {
+    const set = new Set();
+    phrases.forEach(p => (p.tags || []).forEach(t => set.add(t)));
+    return [...set].sort();
+  }
+
+  function renderTagFilter() {
+    const bar = document.getElementById('tag-filter-bar');
+    const tags = getAllTags();
+    if (tags.length === 0) { bar.innerHTML = ''; return; }
+    bar.innerHTML = `<button class="tag-filter-btn ${!activeTagFilter ? 'active' : ''}" onclick="setTagFilter(null)">すべて</button>` +
+      tags.map(t => `<button class="tag-filter-btn ${activeTagFilter === t ? 'active' : ''}" onclick="setTagFilter('${escapeAttr(t)}')">${t}</button>`).join('');
+  }
+
+  function setTagFilter(tag) {
+    activeTagFilter = tag;
+    renderTagFilter();
+    renderPhrases();
   }
 
   function renderPhrases() {
     const container = document.getElementById('phrases-container');
-    const grouped = groupByCategory(phrases);
     const langs = getActiveLangs();
     container.innerHTML = '';
 
-    for (const [cat, items] of Object.entries(grouped)) {
-      const catEl = document.createElement('div');
-      catEl.innerHTML = `<div class="category-title">— ${cat}</div>`;
+    const filtered = activeTagFilter
+      ? phrases.filter(p => (p.tags || []).includes(activeTagFilter))
+      : phrases;
 
-      items.forEach(phrase => {
-        const card = document.createElement('div');
-        card.className = 'phrase-card';
-        let html = `<div class="phrase-ja">${phrase.ja}</div>`;
-        langs.forEach(lang => {
-          const text = phrase[lang.code] || '—';
-          html += `
-            <div class="lang-row">
-              <span class="lang-label" style="background:${lang.bg};color:${lang.color}">${lang.label}</span>
-              <span class="lang-text" style="color:${lang.color}">${text}</span>
-              <button class="speak-btn" onclick="speakBtn(this,'${escapeAttr(text)}','${lang.code}')">▶</button>
-            </div>`;
-        });
-        card.innerHTML = html;
-        catEl.appendChild(card);
+    filtered.forEach((phrase) => {
+      const globalIdx = phrases.indexOf(phrase);
+      const card = document.createElement('div');
+      card.className = 'phrase-card';
+
+      // 長押し検知
+      let pressTimer = null;
+      const startPress = (e) => {
+        pressTimer = setTimeout(() => {
+          pressTimer = null;
+          openEditModal(globalIdx);
+        }, 500);
+      };
+      const cancelPress = () => { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } };
+      const endPress = (e) => {
+        if (pressTimer) {
+          clearTimeout(pressTimer);
+          pressTimer = null;
+          card.classList.toggle('expanded');
+        }
+      };
+      card.addEventListener('mousedown', startPress);
+      card.addEventListener('touchstart', startPress, { passive: true });
+      card.addEventListener('mousemove', cancelPress);
+      card.addEventListener('touchmove', cancelPress, { passive: true });
+      card.addEventListener('mouseup', endPress);
+      card.addEventListener('touchend', endPress);
+
+      const tags = (phrase.tags || []);
+      const tagsHtml = tags.length
+        ? `<div class="phrase-tags">${tags.map(t => `<span class="phrase-tag">${t}</span>`).join('')}</div>`
+        : '';
+
+      let langsHtml = '<div class="phrase-langs">';
+      langs.forEach(lang => {
+        const text = phrase[lang.code] || '—';
+        langsHtml += `
+          <div class="lang-row">
+            <span class="lang-label" style="background:${lang.bg};color:${lang.color}">${lang.label}</span>
+            <span class="lang-text" style="color:${lang.color}">${text}</span>
+            <button class="speak-btn" onclick="event.stopPropagation();speakBtn(this,'${escapeAttr(text)}','${lang.code}')">▶</button>
+          </div>`;
       });
-      container.appendChild(catEl);
-    }
-    document.getElementById('total-count').textContent = phrases.length;
+      langsHtml += '</div>';
+
+      card.innerHTML = `
+        <div class="phrase-ja">
+          <span class="phrase-ja-text">${phrase.ja}${tagsHtml}</span>
+          <span class="phrase-expand-icon">▼</span>
+        </div>
+        ${langsHtml}`;
+
+      container.appendChild(card);
+    });
+
+    document.getElementById('total-count').textContent = filtered.length;
+    renderTagFilter();
   }
 
   // ── DeepL言語コードマッピング ──
@@ -723,7 +809,9 @@
     const ja = document.getElementById('input-ja').value.trim();
     if (!ja) { showToast('日本語を入力してください'); return; }
 
-    const obj = { ja, category: document.getElementById('input-category').value };
+    const tagsRaw = document.getElementById('input-tags').value.trim();
+    const tags = tagsRaw ? tagsRaw.split(/\s+/).filter(Boolean) : [];
+    const obj = { ja, tags };
     // 全登録言語のinputから取得（表示中のみ）
     getActiveLangs().forEach(lang => {
       const el = document.getElementById('input-' + lang.code);
@@ -839,6 +927,8 @@ ${langList}
     saveData();
     renderPhrases();
     document.getElementById('input-ja').value = '';
+    const tagsEl = document.getElementById('input-tags');
+    if (tagsEl) tagsEl.value = '';
     getActiveLangs().forEach(lang => {
       const el = document.getElementById('input-' + lang.code);
       if (el) { el.value = ''; el.classList.remove('input-translated'); }
@@ -846,6 +936,148 @@ ${langList}
     showToast('追加しました ✓');
     switchTab('list');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── 編集モーダル ──
+  let editingIdx = -1;
+
+  function openEditModal(idx) {
+    editingIdx = idx;
+    const phrase = phrases[idx];
+    document.getElementById('edit-modal-category').textContent = (phrase.tags || []).length ? (phrase.tags || []).join('  ') : 'タグなし';
+
+    const fields = document.getElementById('edit-fields');
+    fields.innerHTML = `
+      <div class="form-row">
+        <div class="form-label">
+          <span class="lang-label" style="background:var(--tag-ja);color:var(--text-muted)">日</span>
+          <span class="form-label-text">日本語</span>
+        </div>
+        <input type="text" id="edit-ja" class="form-input" value="${escapeAttr(phrase.ja)}">
+      </div>` +
+      ALL_LANGS.map(lang => `
+      <div class="form-row">
+        <div class="form-label">
+          <span class="lang-label" style="background:${lang.bg};color:${lang.color}">${lang.label}</span>
+          <span class="form-label-text">${lang.name}</span>
+        </div>
+        <input type="text" id="edit-${lang.code}" class="form-input" value="${escapeAttr(phrase[lang.code] || '')}"
+          oninput="this.classList.remove('input-translated')">
+      </div>`).join('') + `
+      <div class="form-row" style="margin-top:4px">
+        <div class="form-label"><span class="form-label-text">タグ（スペース区切り）</span></div>
+        <input type="text" id="edit-tags" class="form-input" value="${escapeAttr((phrase.tags || []).join(' '))}" placeholder="あいさつ 毎日 重要">
+      </div>`;
+
+    document.getElementById('edit-modal').classList.add('show');
+  }
+
+  function closeEditModal() {
+    document.getElementById('edit-modal').classList.remove('show');
+    editingIdx = -1;
+  }
+
+  function deletePhrase() {
+    if (editingIdx < 0) return;
+    if (!confirm('このフレーズを削除しますか？')) return;
+    phrases.splice(editingIdx, 1);
+    saveData();
+    renderPhrases();
+    closeEditModal();
+    showToast('削除しました');
+  }
+
+  function saveEdit() {
+    if (editingIdx < 0) return;
+    const phrase = phrases[editingIdx];
+    phrase.ja = document.getElementById('edit-ja').value.trim() || phrase.ja;
+    ALL_LANGS.forEach(lang => {
+      const el = document.getElementById('edit-' + lang.code);
+      if (el) phrase[lang.code] = el.value.trim();
+    });
+    const tagsRaw = document.getElementById('edit-tags').value.trim();
+    phrase.tags = tagsRaw ? tagsRaw.split(/\s+/).filter(Boolean) : [];
+    saveData();
+    renderPhrases();
+    closeEditModal();
+    showToast('保存しました ✓');
+  }
+
+  async function editAutoTranslate() {
+    const jaEl = document.getElementById('edit-ja');
+    const jaText = jaEl ? jaEl.value.trim() : '';
+
+    let sourceText = '';
+    let sourceLangCode = null;
+
+    if (jaText) {
+      sourceText = jaText;
+      sourceLangCode = 'JA';
+    } else {
+      for (const lang of ALL_LANGS) {
+        const el = document.getElementById('edit-' + lang.code);
+        if (el && el.value.trim()) {
+          sourceText = el.value.trim();
+          sourceLangCode = DEEPL_LANG_MAP[lang.code] || lang.code.toUpperCase();
+          break;
+        }
+      }
+    }
+
+    if (!sourceText) { showToast('まず日本語かいずれかの言語を入力してください'); return; }
+
+    const btn = document.getElementById('edit-translate-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> 翻訳中...';
+
+    const targets = [];
+    if (!jaText) targets.push('ja');
+    ALL_LANGS.forEach(lang => {
+      const el = document.getElementById('edit-' + lang.code);
+      if (!el || !el.value.trim()) targets.push(lang.code);
+    });
+
+    if (targets.length === 0) {
+      showToast('すべての言語が入力済みです');
+      btn.disabled = false;
+      btn.innerHTML = '✨ 空欄を自動翻訳する';
+      return;
+    }
+
+    try {
+      const results = await Promise.all(
+        targets.map(async (code) => {
+          const deepLTarget = DEEPL_LANG_MAP[code];
+          if (!deepLTarget) return null;
+          const res = await fetch('/api/translate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              text: sourceText,
+              target_lang: deepLTarget,
+              source_lang: sourceLangCode ? sourceLangCode.split('-')[0] : undefined,
+            }),
+          });
+          if (!res.ok) throw new Error(`DeepL error ${res.status}`);
+          const data = await res.json();
+          return { code, text: data.translations?.[0]?.text || '' };
+        })
+      );
+
+      results.forEach(r => {
+        if (!r || !r.text) return;
+        const el = document.getElementById('edit-' + r.code);
+        if (el) { el.value = r.text; el.classList.add('input-translated'); }
+        if (r.code === 'ja' && jaEl) { jaEl.value = r.text; jaEl.classList.add('input-translated'); }
+      });
+      showToast('翻訳しました ✓');
+    } catch(e) {
+      console.error(e);
+      showToast('翻訳に失敗しました');
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '✨ 空欄を自動翻訳する';
   }
 
   // ── 設定画面 ──
