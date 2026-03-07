@@ -30,7 +30,6 @@ export default async function handler(req, res) {
 
   try {
     const body = new URLSearchParams({
-      auth_key: apiKey,
       text,
       target_lang,
     });
@@ -38,7 +37,10 @@ export default async function handler(req, res) {
 
     const response = await fetch(baseUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `DeepL-Auth-Key ${apiKey}`,
+      },
       body: body.toString(),
     });
 
