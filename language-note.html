@@ -431,7 +431,7 @@
     renderTagFilter();
   }
 
-  const DEEPL_LANG_MAP = { ja:'JA', en:'EN-GB', de:'DE', fr:'FR', nl:'NL', sv:'SV', es:'ES', it:'IT', pt:'PT-PT', ko:'KO', zh:'ZH', ru:'RU' };
+  const DEEPL_LANG_MAP = { ja:'JA', en:'EN-GB', de:'DE', fr:'FR', nl:'NL', sv:'SV', es:'ES', it:'IT', pt:'PT-PT', ko:'KO', zh:'ZH', ru:'RU', ar:'AR' };
 
   function loadDeeplKey() { try { deeplApiKey = localStorage.getItem('deepl-api-key') || ''; } catch(e) {} }
   function saveDeeplKey(key) { deeplApiKey = key.trim(); try { localStorage.setItem('deepl-api-key', deeplApiKey); } catch(e) {} }
