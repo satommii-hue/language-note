@@ -367,7 +367,8 @@
       let longPressed = false;
       let touchHandled = false;
 
-      const startPress = () => {
+      const startPress = (e) => {
+        if (e.type === 'mousedown' && touchHandled) return;
         longPressed = false;
         pressTimer = setTimeout(() => {
           longPressed = true;
@@ -386,7 +387,7 @@
           card.classList.toggle('expanded');
         }
         longPressed = false;
-        setTimeout(() => { touchHandled = false; }, 300);
+        setTimeout(() => { touchHandled = false; }, 500);
       };
       const endPressMouse = () => {
         if (touchHandled) return;
