@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>語学ノート — 制作メモ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f3;
+    --surface: #ffffff;
+    --border: #e8e2d5;
+    --border-dark: #c8bfaa;
+    --text: #2c2418;
+    --text-muted: #8c7e6a;
+    --text-light: #b5a898;
+    --accent: #c4873a;
+    --tag-ja: #f0ece4;
+    --danger: #c0392b;
+    --green: #2d5a1b;
+    --green-bg: #e8f3e8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 300;
+    line-height: 1.8;
+    padding-bottom: 80px;
+  }
+
+  .hero {
+    background: var(--text);
+    color: var(--bg);
+    padding: 48px 24px 40px;
+  }
+  .hero-mono {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+  .hero-sub {
+    font-size: 13px;
+    color: #a09080;
+    line-height: 1.7;
+  }
+
+  .toc {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border-dark);
+    padding: 14px 24px;
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .toc::-webkit-scrollbar { display: none; }
+  .toc a {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    text-decoration: none;
+    white-space: nowrap;
+    padding: 4px 0;
+    border-bottom: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  .toc a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .section {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 40px 24px 0;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 6px;
+  }
+
+  .section h2 {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  .note {
+    background: var(--tag-ja);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+  }
+  .note-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .note p { font-size: 13px; color: var(--text-muted); margin: 0; }
+
+  .note.green { background: var(--green-bg); border-left-color: var(--green); }
+  .note.green .note-label { color: var(--green); }
+
+  .note.dark { background: var(--text); border-left-color: var(--accent); }
+  .note.dark .note-label { color: var(--accent); }
+  .note.dark p { color: #a09080; }
+
+  hr.divider {
+    max-width: 640px;
+    margin: 40px auto 0;
+    padding: 0 24px;
+    border: none;
+    border-top: 1px dashed var(--border-dark);
+  }
+
+  /* ── Flow diagram ── */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 24px;
+  }
+  .flow-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+  .flow-node {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    flex: 1;
+  }
+  .flow-node-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    color: var(--text-light);
+    margin-bottom: 4px;
+  }
+  .flow-node-title {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 3px;
+  }
+  .flow-node-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--border-dark);
+  }
+  .flow-node.accent { border-left: 3px solid var(--accent); }
+  .flow-node.green { border-left: 3px solid var(--green); }
+  .flow-node.muted { background: var(--tag-ja); }
+
+  /* ── Tech table ── */
+  .tech-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .tech-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+  }
+  .tech-key {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    background: #fdf6ee;
+    border: 1px solid #e8c898;
+    border-radius: 3px;
+    padding: 3px 7px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    white-space: nowrap;
+  }
+  .tech-body { flex: 1; }
+  .tech-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+  .tech-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+
+  /* ── Decision log ── */
+  .decisions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .decision {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .decision-q {
+    background: var(--surface);
+    padding: 12px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .decision-q::before {
+    content: 'Q';
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text-light);
+    background: var(--tag-ja);
+    padding: 2px 6px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .decision-a {
+    background: var(--tag-ja);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    border-top: 1px solid var(--border);
+  }
+  .decision-a::before {
+    content: 'A';
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--accent);
+    background: #fdf6ee;
+    border: 1px solid #e8c898;
+    padding: 2px 6px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* ── Bug log ── */
+  .bug-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .bug-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .bug-status {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    padding: 3px 7px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .bug-status.fixed { background: var(--green-bg); color: var(--green); border: 1px solid #a8d5a8; }
+  .bug-status.open { background: #ffeaea; color: var(--danger); border: 1px solid #f5c0ba; }
+  .bug-body { flex: 1; }
+  .bug-title { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
+  .bug-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+
+  /* ── Size meter ── */
+  .size-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .size-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .size-label { font-size: 13px; font-weight: 500; }
+  .size-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); }
+  .bar-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+  .bar-fill { height: 100%; background: var(--accent); border-radius: 3px; }
+  .size-note { font-size: 11px; color: var(--text-light); }
+
+  .footer {
+    max-width: 640px;
+    margin: 60px auto 0;
+    padding: 24px;
+    border-top: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-light);
+    letter-spacing: 0.08em;
+    text-align: center;
+  }
+
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    background: var(--tag-ja);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--accent);
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-mono">// DEV MEMO · 語学ノート</div>
+  <h1>制作メモ</h1>
+  <div class="hero-sub">どうやって作ったか、なぜこうなっているか。<br>自分用の記録。</div>
+</div>
+
+<nav class="toc">
+  <a href="#overview">構成</a>
+  <a href="#dataflow">データの流れ</a>
+  <a href="#storage">ストレージ</a>
+  <a href="#tech">使った技術</a>
+  <a href="#decisions">設計の判断</a>
+  <a href="#bugs">バグ記録</a>
+</nav>
+
+<!-- ── Overview ── -->
+<div class="section" id="overview">
+  <div class="section-label">01</div>
+  <h2>全体の構成</h2>
+
+  <p>単一のHTMLファイル（<code>language-note.html</code>）にHTML・CSS・JavaScriptをすべて詰め込んだ構成。サーバーは翻訳APIのプロキシだけで、それ以外はブラウザの中だけで動いている。</p>
+
+  <div class="tech-list">
+    <div class="tech-row">
+      <span class="tech-key">HTML/CSS/JS</span>
+      <div class="tech-body">
+        <div class="tech-title">単一ファイル構成</div>
+        <div class="tech-desc">フレームワーク不使用。ライブラリもゼロ。素のHTML+CSS+JavaScriptだけ。ファイルを開けばそれだけで動く。</div>
+      </div>
+    </div>
+    <div class="tech-row">
+      <span class="tech-key">Vercel</span>
+      <div class="tech-body">
+        <div class="tech-title">ホスティング + APIプロキシ</div>
+        <div class="tech-desc">language-note.vercel.app で公開。翻訳APIはCORSの問題でブラウザから直接呼べないので、Vercelのサーバーサイド関数を中継役にしている。</div>
+      </div>
+    </div>
+    <div class="tech-row">
+      <span class="tech-key">GitHub</span>
+      <div class="tech-body">
+        <div class="tech-title">バージョン管理</div>
+        <div class="tech-desc">satommii-hue/language-note。GitHubにpushするとVercelに自動デプロイされる。</div>
+      </div>
+    </div>
+    <div class="tech-row">
+      <span class="tech-key">DeepL API</span>
+      <div class="tech-body">
+        <div class="tech-title">翻訳エンジン</div>
+        <div class="tech-desc">ユーザーが自分のAPIキーを持つ方式。アプリ側にキーは持たない。月50万文字まで無料。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── Data flow ── -->
+<div class="section" id="dataflow">
+  <div class="section-label">02</div>
+  <h2>データの流れ</h2>
+
+  <p>フレーズを追加するときの流れと、翻訳するときの流れは別になっている。</p>
+
+  <div class="section-label" style="margin-bottom:10px">フレーズ追加のとき</div>
+  <div class="flow" style="margin-bottom:28px">
+    <div class="flow-node accent">
+      <div class="flow-node-label">INPUT</div>
+      <div class="flow-node-title">日本語を入力</div>
+      <div class="flow-node-desc">フォームに入力した値をJavaScriptが受け取る</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">
+      <div class="flow-node-label">CHECK</div>
+      <div class="flow-node-title">スペルチェック</div>
+      <div class="flow-node-desc">Claude API（Haiku）に投げてスペルミスを確認。JSONで返ってくる。</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node green">
+      <div class="flow-node-label">SAVE</div>
+      <div class="flow-node-title">localStorage に保存</div>
+      <div class="flow-node-desc">JavaScriptの配列に追加して、そのままlocalStorageに書き込む</div>
+    </div>
+  </div>
+
+  <div class="section-label" style="margin-bottom:10px">翻訳するとき</div>
+  <div class="flow" style="margin-bottom:28px">
+    <div class="flow-node accent">
+      <div class="flow-node-label">INPUT</div>
+      <div class="flow-node-title">日本語（またはいずれかの言語）を入力</div>
+      <div class="flow-node-desc"></div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">
+      <div class="flow-node-label">PROXY</div>
+      <div class="flow-node-title">Vercelのサーバー関数を経由</div>
+      <div class="flow-node-desc">ブラウザからDeepLに直接リクエストするとCORSエラーになる。Vercelのサーバーが中継することで回避。</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">
+      <div class="flow-node-label">API</div>
+      <div class="flow-node-title">DeepL APIに翻訳リクエスト</div>
+      <div class="flow-node-desc">ユーザーのAPIキーをリクエストに含めて送る。キーはサーバーには保存されない。</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node green">
+      <div class="flow-node-label">RESULT</div>
+      <div class="flow-node-title">翻訳結果をフォームに表示</div>
+      <div class="flow-node-desc">各言語のinputに値が入る。確認してから「追加する」で保存。</div>
+    </div>
+  </div>
+
+  <div class="note dark">
+    <div class="note-label">CORSとは</div>
+    <p>ブラウザのセキュリティ機能。「このサイトから別のサイトへのリクエストは許可しない」というルール。DeepLのAPIは外部ドメインなので直接呼べない。サーバーサイドには制限がないので、Vercelを中継にすることで解決した。</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── Storage ── -->
+<div class="section" id="storage">
+  <div class="section-label">03</div>
+  <h2>ストレージの仕組み</h2>
+
+  <p>データはすべてブラウザの<code>localStorage</code>に保存される。サーバーには何も送らない。</p>
+
+  <div class="tech-list">
+    <div class="tech-row">
+      <span class="tech-key">phrases</span>
+      <div class="tech-body">
+        <div class="tech-title">フレーズデータ</div>
+        <div class="tech-desc">日本語＋各言語のテキスト＋タグをJSONとして保存。キー名：<code>language-note-data-v1</code></div>
+      </div>
+    </div>
+    <div class="tech-row">
+      <span class="tech-key">APIキー</span>
+      <div class="tech-body">
+        <div class="tech-title">DeepL APIキー</div>
+        <div class="tech-desc">このデバイスのブラウザにのみ保存。他デバイスで使うときは再入力が必要。キー名：<code>deepl-api-key</code></div>
+      </div>
+    </div>
+    <div class="tech-row">
+      <span class="tech-key">設定</span>
+      <div class="tech-body">
+        <div class="tech-title">言語の表示設定・並び順</div>
+        <div class="tech-desc">どの言語を非表示にしているか、並び順。フレーズデータと同じJSONに含まれる。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="size-box">
+    <div class="size-row">
+      <span class="size-label">localStorageの上限</span>
+      <span class="size-val">5〜10 MB</span>
+    </div>
+    <div class="bar-track"><div class="bar-fill" style="width:0.2%"></div></div>
+    <div class="size-note">フレーズ1件 ≈ 1KB。1,000件でも1MB以下。容量を気にする必要はほぼない。</div>
+  </div>
+
+  <div class="note">
+    <div class="note-label">注意点</div>
+    <p>localStorageはブラウザとデバイスの組み合わせに紐づく。Chromeで保存したデータはSafariからは見えない。PCとスマホでは別々。「キャッシュをクリア」「サイトデータを削除」でも消える。→ だから定期的なエクスポートが大事。</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── Tech ── -->
+<div class="section" id="tech">
+  <div class="section-label">04</div>
+  <h2>使った技術・サービス</h2>
+
+  <div class="tech-list">
+    <div class="tech-row">
+      <span class="tech-key">Speech Synthesis API</span>
+      <div class="tech-body">
+        <div class="tech-title">音声読み上げ</div>
+        <div class="tech-desc">ブラウザ標準の機能。外部サービス不要。言語コード（<code>bcp47</code>）を指定して再生。英語はBritish English（<code>en-GB</code>）を優先して探す。</div>
+      </div>
+    </div>
+    <div class="tech-row">
+      <span class="tech-key">Claude API（Haiku）</span>
+      <div class="tech-body">
+        <div class="tech-title">スペルチェック</div>
+        <div class="tech-desc">フレーズ追加時に自動でスペルミスを検出。モデルはコスト・速度のバランスでHaikuを使用。JSON形式のみで返すよう指示している。</div>
+      </div>
+    </div>
+    <div class="tech-row">
+      <span class="tech-key">DeepL API</span>
+      <div class="tech-body">
+        <div class="tech-title">自動翻訳</div>
+        <div class="tech-desc">12言語に対応。各言語のDeepLコード（例：英語は<code>EN-GB</code>）にマッピングして送信。</div>
+      </div>
+    </div>
+    <div class="tech-row">
+      <span class="tech-key">Noto Sans JP / DM Mono</span>
+      <div class="tech-body">
+        <div class="tech-title">フォント</div>
+        <div class="tech-desc">Google Fontsから読み込み。日本語はNoto Sans JP、コードや言語ラベルはDM Mono。</div>
+      </div>
+    </div>
+    <div class="tech-row">
+      <span class="tech-key">Drag & Drop</span>
+      <div class="tech-body">
+        <div class="tech-title">言語の並び替え</div>
+        <div class="tech-desc">PCはHTML5のdraggable属性、スマホはtouchイベントで実装。touchendのタイミングでDOMの最終状態を<code>querySelectorAll</code>で直接読み取る方式が安定した。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── Decisions ── -->
+<div class="section" id="decisions">
+  <div class="section-label">05</div>
+  <h2>設計の判断メモ</h2>
+
+  <p>なぜこうなっているのか、迷ったポイントの記録。</p>
+
+  <div class="decisions">
+    <div class="decision">
+      <div class="decision-q">APIキーをどこに保存するか</div>
+      <div class="decision-a">ユーザー各自がブラウザのlocalStorageに保存する方式を採用。サーバーにキーを持たないのでセキュリティリスクが下がる。デバイスごとに入力が必要になるが、そのほうが安全。</div>
+    </div>
+    <div class="decision">
+      <div class="decision-q">言語を「削除」ではなく「非表示」にしているのはなぜか</div>
+      <div class="decision-a">削除するとその言語のデータも失われる。非表示にするだけならデータは残る。後から「やっぱり見たい」となったときに復活できる。画面スペースの節約とデータ保全の両立。</div>
+    </div>
+    <div class="decision">
+      <div class="decision-q">フレームワーク（ReactやVueなど）を使わなかったのはなぜか</div>
+      <div class="decision-a">単一HTMLファイルで完結させる制約を守るため。フレームワークを入れるとビルド環境が必要になる。素のJavaScriptで十分な規模なので、シンプルさを優先した。</div>
+    </div>
+    <div class="decision">
+      <div class="decision-q">データ同期にクラウドを使わないのはなぜか</div>
+      <div class="decision-a">アカウント管理が不要なぶん、誰でもすぐ使えるメリットがある。JSONエクスポート→Googleドライブで十分。将来的にサーバーサイドで同期する構成も検討中。</div>
+    </div>
+    <div class="decision">
+      <div class="decision-q">カードのタップとロングプレスを両立させた方法</div>
+      <div class="decision-a">500msのタイマーで判定。touchendとmousedownが競合するので<code>longPressed</code>フラグと<code>touchHandled</code>フラグを両方使って制御。スマホとPCで動作が変わらないように調整した。</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── Bugs ── -->
+<div class="section" id="bugs">
+  <div class="section-label">06</div>
+  <h2>バグ記録</h2>
+
+  <p>発生したバグと対処の記録。</p>
+
+  <div class="bug-list">
+    <div class="bug-item">
+      <span class="bug-status fixed">FIXED</span>
+      <div class="bug-body">
+        <div class="bug-title">スマホでトーストが消えない・黒い背景が残る</div>
+        <div class="bug-desc"><code>opacity</code> + <code>pointer-events: none</code> の組み合わせで修正。visibilityやdisplayではなくopacityでフェードさせることで解決。</div>
+      </div>
+    </div>
+    <div class="bug-item">
+      <span class="bug-status fixed">FIXED</span>
+      <div class="bug-body">
+        <div class="bug-title">カードの開閉が動かない（一度開くと閉じない）</div>
+        <div class="bug-desc">カードのタップ（開閉）と長押し（編集モーダル）が競合していた。<code>longPressed</code>フラグ + <code>touchHandled</code> で mousedownをガード（500ms）することで修正。</div>
+      </div>
+    </div>
+    <div class="bug-item">
+      <span class="bug-status fixed">FIXED</span>
+      <div class="bug-body">
+        <div class="bug-title">設定画面を開くたびにイベントリスナーが蓄積される</div>
+        <div class="bug-desc"><code>renderSettings</code>のたびに<code>cloneNode(true)</code>でコンテナをリセットする方式で解決。</div>
+      </div>
+    </div>
+    <div class="bug-item">
+      <span class="bug-status fixed">FIXED</span>
+      <div class="bug-body">
+        <div class="bug-title">ドラッグ並び替えで順番がずれる</div>
+        <div class="bug-desc">数値インデックスの計算をやめて、<code>touchend</code>時にDOMの最終状態を<code>querySelectorAll</code>で直接読み取る方式に変更。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note green">
+    <div class="note-label">現在の状態</div>
+    <p>既知のバグはすべて修正済み。</p>
+  </div>
+</div>
+
+<div class="footer">
+  語学ノート · 制作メモ · 2026
+</div>
+
+</body>
+</html>
