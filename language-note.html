@@ -142,8 +142,8 @@
   .btn-modal-primary { flex: 2; padding: 12px; background: var(--text); color: var(--bg); border: none; border-radius: 4px; font-family: 'Noto Sans JP', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; }
   .btn-modal-primary:active { background: var(--accent); }
 
-  .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: 100px; font-size: 12px; font-weight: 500; transition: transform 0.3s ease; white-space: nowrap; z-index: 200; }
-  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: 100px; font-size: 12px; font-weight: 500; transition: transform 0.3s ease, opacity 0.3s ease; white-space: nowrap; z-index: 200; pointer-events: none; opacity: 0; }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 </style>
 </head>
 <body>
@@ -364,16 +364,25 @@
       card.className = 'phrase-card';
 
       let pressTimer = null;
+      let touchHandled = false;
       const startPress = () => { pressTimer = setTimeout(() => { pressTimer = null; openEditModal(globalIdx); }, 500); };
       const cancelPress = () => { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } };
-      const endPress = () => { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; card.classList.toggle('expanded'); } };
+      const endPressTouch = () => {
+        touchHandled = true;
+        if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; card.classList.toggle('expanded'); }
+        setTimeout(() => { touchHandled = false; }, 300);
+      };
+      const endPressMouse = () => {
+        if (touchHandled) return;
+        if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; card.classList.toggle('expanded'); }
+      };
 
       card.addEventListener('mousedown', startPress);
       card.addEventListener('touchstart', startPress, { passive: true });
       card.addEventListener('mousemove', cancelPress);
       card.addEventListener('touchmove', cancelPress, { passive: true });
-      card.addEventListener('mouseup', endPress);
-      card.addEventListener('touchend', endPress);
+      card.addEventListener('mouseup', endPressMouse);
+      card.addEventListener('touchend', endPressTouch);
 
       const tagsHtml = (phrase.tags||[]).length
         ? `<div class="phrase-tags">${(phrase.tags||[]).map(t=>`<span class="phrase-tag">${t}</span>`).join('')}</div>` : '';
