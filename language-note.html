@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>語学ノート</title>
+<title>LOST IN TRANSLATION</title>
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -38,7 +38,8 @@
     position: sticky; top: 0; z-index: 20;
   }
   .header-top { display: flex; align-items: center; justify-content: space-between; }
-  .header h1 { font-size: 20px; font-weight: 500; letter-spacing: 0.04em; }
+  .header-lead { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text-muted); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 3px; }
+  .header h1 { font-size: 20px; font-weight: 500; letter-spacing: 0.04em; color: var(--text-muted); }
 
   .header-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 0.1em; margin-top: 5px; }
   .lang-badges { display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap; }
@@ -141,7 +142,8 @@
 
 <div class="header">
   <div class="header-top">
-    <h1>語学ノート</h1>
+    <div class="header-lead">language note</div>
+    <h1>LOST IN TRANSLATION</h1>
   </div>
   <div class="header-sub" id="header-sub"></div>
   <div class="lang-badges" id="lang-badges"></div>
