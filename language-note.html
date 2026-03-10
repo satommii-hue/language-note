@@ -64,8 +64,7 @@
   .phrase-ja { padding: 12px 14px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; -webkit-user-select: none; }
   .phrase-ja::before { content: 'JA'; font-family: 'DM Mono', monospace; font-size: 8px; color: var(--text-muted); background: var(--tag-ja); padding: 2px 5px; border-radius: 2px; flex-shrink: 0; }
   .phrase-ja-text { flex: 1; }
-  .phrase-expand-icon { font-size: 10px; color: var(--text-light); transition: transform 0.2s; flex-shrink: 0; }
-  .phrase-card.expanded .phrase-expand-icon { transform: rotate(180deg); }
+
   .phrase-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
   .phrase-tag { font-family: 'DM Mono', monospace; font-size: 8px; padding: 2px 6px; border-radius: 2px; background: var(--tag-ja); color: var(--text-muted); }
   .phrase-langs { display: none; border-top: 1px solid var(--border); }
@@ -444,7 +443,7 @@
       });
       langsHtml += '</div>';
 
-      card.innerHTML = `<div class="phrase-ja"><span class="phrase-ja-text">${phrase.ja}${tagsHtml}</span><span class="phrase-expand-icon">▼</span></div>${langsHtml}`;
+      card.innerHTML = `<div class="phrase-ja"><span class="phrase-ja-text">${phrase.ja}${tagsHtml}</span><button class="speak-btn" onclick="event.stopPropagation();speakBtn(this,'${escapeAttr(phrase.ja)}','ja-JP-direct')">▶</button></div>${langsHtml}`;
       container.appendChild(card);
     });
 
@@ -719,7 +718,7 @@
       });
       langsHtml += '</div>';
 
-      card.innerHTML = `<div class="phrase-ja"><span class="phrase-ja-text">${phrase.ja}${tagsHtml}</span><span class="phrase-expand-icon">▼</span></div>${langsHtml}`;
+      card.innerHTML = `<div class="phrase-ja"><span class="phrase-ja-text">${phrase.ja}${tagsHtml}</span><button class="speak-btn" onclick="event.stopPropagation();speakBtn(this,'${escapeAttr(phrase.ja)}','ja-JP-direct')">▶</button></div>${langsHtml}`;
       container.appendChild(card);
     });
   }
@@ -843,12 +842,12 @@
     window.speechSynthesis.cancel();
     if (currentBtn) currentBtn.classList.remove('playing');
     currentBtn = btn; if (btn) btn.classList.add('playing');
-    const lang = getLang(langCode);
+    const bcp47 = langCode === 'ja-JP-direct' ? 'ja-JP' : getLang(langCode).bcp47;
     const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = lang.bcp47; utter.rate = 0.88;
+    utter.lang = bcp47; utter.rate = 0.88;
     const voices = window.speechSynthesis.getVoices();
-    const voice = voices.find(v => v.lang === lang.bcp47)
-      || voices.find(v => v.lang.startsWith(lang.bcp47.split('-')[0]))
+    const voice = voices.find(v => v.lang === bcp47)
+      || voices.find(v => v.lang.startsWith(bcp47.split('-')[0]))
       || null;
     if (voice) utter.voice = voice;
     utter.onend = utter.onerror = () => { if (btn) btn.classList.remove('playing'); currentBtn = null; };
