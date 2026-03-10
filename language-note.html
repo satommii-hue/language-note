@@ -229,6 +229,7 @@
     <input type="text" id="apikey-input" class="form-input" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx" style="margin-bottom:8px;font-family:'DM Mono',monospace;font-size:13px;">
     <div style="font-size:11px;color:var(--text-light);margin-bottom:16px;line-height:1.6">キーはこのデバイスのブラウザにのみ保存されます。他人には見えません。</div>
     <div class="modal-actions">
+      <button class="btn-secondary" id="apikey-delete-btn" onclick="deleteApiKey()" style="color:var(--danger);border-color:var(--danger);display:none">削除する</button>
       <button class="btn-secondary" onclick="closeApiKeyModal()">キャンセル</button>
       <button class="btn-modal-primary" onclick="saveApiKey()">保存する</button>
     </div>
@@ -462,9 +463,20 @@
   function loadDeeplKey() { try { deeplApiKey = localStorage.getItem('deepl-api-key') || ''; } catch(e) {} }
   function saveDeeplKey(key) { deeplApiKey = key.trim(); try { localStorage.setItem('deepl-api-key', deeplApiKey); } catch(e) {} }
 
-  function openApiKeyModal() { document.getElementById('apikey-input').value = deeplApiKey; document.getElementById('apikey-modal').classList.add('show'); }
+  function openApiKeyModal() {
+    document.getElementById('apikey-input').value = deeplApiKey;
+    document.getElementById('apikey-delete-btn').style.display = deeplApiKey ? '' : 'none';
+    document.getElementById('apikey-modal').classList.add('show');
+  }
   function closeApiKeyModal() { document.getElementById('apikey-modal').classList.remove('show'); }
-
+  function deleteApiKey() {
+    saveDeeplKey('');
+    try { localStorage.removeItem('deepl-api-key'); } catch(e) {}
+    closeApiKeyModal();
+    updateApikeyBanner();
+    renderSettings();
+    showToast('APIキーを削除しました');
+  }
   function saveApiKey() {
     const val = document.getElementById('apikey-input').value.trim();
     if (!val) { showToast('APIキーを入力してください'); return; }
