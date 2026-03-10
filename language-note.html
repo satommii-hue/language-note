@@ -836,30 +836,25 @@
 
       row.addEventListener('touchend', e => {
         if (!clone) return;
-        clone.remove(); clone = null; row.style.display = '';
+        clone.remove(); clone = null;
+
         const srcCode = row.dataset.code;
-
-        // placeholder削除前にDOMの並び順を読み取る
-        // placeholder位置を「前後のrowのcode」で特定する
         const parent = placeholder.parentNode;
-        const prevRow = placeholder.previousElementSibling;
-        const prevCode = prevRow && prevRow.dataset && prevRow.dataset.code ? prevRow.dataset.code : null;
+
+        // ① rowをplaceholderの位置に移動してからplaceholderを削除
+        parent.insertBefore(row, placeholder);
         placeholder.remove();
+        row.style.display = '';
 
-        // 表示中langのcodeを現在のDOM順で取得（rowはまだdisplay:noneだが、dataset.codeは読める）
-        const visibleRows = [...parent.querySelectorAll('.lang-setting-row[draggable="true"]')];
-        const newOrder = visibleRows.map(r => r.dataset.code).filter(Boolean);
+        // ② この時点でDOMの順序が確定 → そのまま読む
+        const newOrder = [...parent.querySelectorAll('.lang-setting-row[draggable="true"]')]
+          .map(r => r.dataset.code).filter(Boolean);
 
-        // prevCodeの直後にsrcCodeを挿入（prevCodeがnullなら先頭）
-        const filtered = newOrder.filter(c => c !== srcCode);
-        const insertAt = prevCode ? filtered.indexOf(prevCode) + 1 : 0;
-        filtered.splice(insertAt, 0, srcCode);
-
-        // activeLangCodesのvisible部分だけfilteredで置き換え（hidden順序は維持）
+        // ③ activeLangCodesを更新（hidden言語は末尾に温存）
         const hiddenCodes = activeLangCodes.filter(c => hiddenLangCodes.includes(c));
         activeLangCodes.length = 0;
-        filtered.forEach(c => activeLangCodes.push(c));
-        hiddenCodes.forEach(c => activeLangCodes.push(c));
+        newOrder.forEach(c => activeLangCodes.push(c));
+        hiddenCodes.forEach(c => { if (!activeLangCodes.includes(c)) activeLangCodes.push(c); });
 
         saveData(); updateHeader(); renderPhrases(); renderLangInputs(); renderSettings();
       });
