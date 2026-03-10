@@ -246,14 +246,12 @@
     <div class="modal-title">フレーズを編集</div>
     <div class="modal-sub" id="edit-modal-category"></div>
     <div id="edit-fields"></div>
-    <div style="display:flex;gap:8px;margin-top:4px;margin-bottom:0">
-      <button class="translate-btn" id="edit-translate-btn" onclick="editAutoTranslate()" style="margin-bottom:0;flex:1">
-        ✨ 空欄を自動翻訳する
-      </button>
-      <button class="translate-btn" onclick="clearAllEditFields()" style="margin-bottom:0;flex:0 0 auto;white-space:nowrap;border-color:var(--border-dark)">
-        全クリア
-      </button>
-    </div>
+    <button class="translate-btn" id="edit-translate-btn" onclick="editAutoTranslate()" style="margin-top:4px;margin-bottom:6px">
+      ✨ 空欄を自動翻訳する
+    </button>
+    <button onclick="clearAllEditFields()" style="width:100%;padding:7px;background:none;border:none;font-family:'DM Mono',monospace;font-size:10px;color:var(--text-light);letter-spacing:0.1em;cursor:pointer;text-align:center;margin-bottom:0">
+      CLEAR ALL
+    </button>
     <div class="modal-actions">
       <button class="btn-secondary" style="color:var(--danger);border-color:var(--danger)" onclick="deletePhrase()">削除</button>
       <button class="btn-secondary" onclick="archivePhrase()" style="color:var(--text-muted)">ARCHIVE</button>
