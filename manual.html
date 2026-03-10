@@ -260,11 +260,12 @@
 <div class="hero">
   <div class="hero-mono">// MANUAL · LOST IN TRANSLATION</div>
   <h1>LOST IN TRANSLATION<br>使い方ガイド</h1>
-  <div class="hero-sub">多言語フレーズを一元管理するアプリです。<br>セットアップに10分くらいかかります。</div>
+  <div class="hero-sub">自分が集めた言葉たちをずっと持っていたい<br>音声再生できる語学ノート<br><br>セットアップに10分くらいかかります。</div>
 </div>
 
 <nav class="toc">
   <a href="#about">アプリについて</a>
+  <a href="#longevity">ずっと使えるか</a>
   <a href="#start">はじめ方</a>
   <a href="#deepl">翻訳APIキー</a>
   <a href="#backup">データ保存</a>
@@ -287,7 +288,7 @@
     </div>
     <div class="feature-item">
       <div class="feature-icon">🌍</div>
-      <div class="feature-text"><strong>言語を自由に追加・整理</strong><br>英・独・仏・蘭・瑞・西・伊・葡・韓・中・露・アラビア語に対応</div>
+      <div class="feature-text"><strong>35言語に対応</strong><br>英（英国・米国）・仏・独・伊・丁・瑞・諾・芬・蘭・波・捷・西・葡（欧州・ブラジル）・露・アラビア・インドネシア・越・ネパール・韓・中（簡体・繁体）・泰・保・希・エストニア・洪・リトアニア・ラトビア・羅・スロバキア・スロベニア・土・ウクライナ・ヘブライ</div>
     </div>
     <div class="feature-item">
       <div class="feature-icon">📱</div>
@@ -303,7 +304,49 @@
 
 <hr class="divider">
 
-<!-- ── Start ── -->
+<!-- ── Longevity ── -->
+<div class="section" id="longevity">
+  <div class="section-label">01 — B</div>
+  <h2>ずっと使えますか</h2>
+
+  <p>このアプリが動くのに使っているサービスは4つです。</p>
+
+  <div class="feature-grid">
+    <div class="feature-item">
+      <div class="feature-icon">▲</div>
+      <div class="feature-text"><strong>Vercel</strong><br>アプリの公開先。世界中の開発者が使っている無料ホスティングサービス</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🐙</div>
+      <div class="feature-text"><strong>GitHub</strong><br>コードの保管場所。Microsoftが運営しています</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🌐</div>
+      <div class="feature-text"><strong>DeepL</strong><br>自動翻訳機能に使用。これだけは有料プランがあるサービス（無料枠で十分です）</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">☁️</div>
+      <div class="feature-text"><strong>クラウドストレージ</strong><br>バックアップ用。Googleドライブ・iCloud・Dropboxなどお好みで</div>
+    </div>
+  </div>
+
+  <div class="note good">
+    <div class="note-label">現時点の見立て</div>
+    <p>使えなくなる可能性はほぼないと思います。VercelもGitHubも業界標準で、急に終わるものではないです。</p>
+  </div>
+
+  <div class="note">
+    <div class="note-label">ブラウザの互換性について</div>
+    <p>このアプリはHTMLとJavaScriptだけで動いていて、特別な機能を使っていないので、古いブラウザでも動く設計です。気になるとすれば一点だけ——音声読み上げ機能はブラウザの Speech Synthesis API を使っていて、古いブラウザだと「このブラウザは音声未対応です」と表示されます。ただそれだけで、フレーズの追加・編集・タグ管理・エクスポートなどは5年前のスマホでも普通に動きます。</p>
+  </div>
+
+  <div class="note" style="border-left-color: var(--danger, #c0392b);">
+    <div class="note-label" style="color:var(--danger, #c0392b)">データが消えるリスクについて</div>
+    <p>アプリ側の問題でデータが消えることはほぼないですが、ブラウザのキャッシュ削除・機種変更・アプリの再インストールでは消えます。定期的にエクスポートしておくのをおすすめします。</p>
+  </div>
+</div>
+
+<hr class="divider">
 <div class="section" id="start">
   <div class="section-label">02</div>
   <h2>はじめ方</h2>
@@ -351,7 +394,7 @@
       <div class="step-num">03</div>
       <div class="step-body">
         <div class="step-title">アプリに入力する</div>
-        <div class="step-desc">アプリを開く → 下部タブの「設定」→「DeepL APIキー」→「設定する」→ コピーしたキーを貼り付けて保存。</div>
+        <div class="step-desc">アプリを開く → 下部タブの「SET」→「DeepL APIキー」→「設定する」→ コピーしたキーを貼り付けて保存。</div>
       </div>
     </div>
   </div>
@@ -376,7 +419,7 @@
       <div class="step-num">書き出す</div>
       <div class="step-body">
         <div class="step-title">エクスポート → Googleドライブに保存</div>
-        <div class="step-desc">下部タブの「設定」→「JSONファイルを書き出す」→ 保存先にGoogleドライブを選ぶ（Chromeなら保存先ダイアログが開きます）。SafariはDownloadsに保存されるので、そこからGoogleドライブに移動。</div>
+        <div class="step-desc">下部タブの「SET」→「JSONファイルを書き出す」→ 保存先にGoogleドライブを選ぶ（Chromeなら保存先ダイアログが開きます）。SafariはDownloadsに保存されるので、そこからGoogleドライブに移動。</div>
       </div>
     </div>
     <div class="step">
@@ -417,14 +460,14 @@
       <div class="step-num">追加</div>
       <div class="step-body">
         <div class="step-title">フレーズを追加する</div>
-        <div class="step-desc">「追加する」タブ → 日本語を入力 →「✨ 自動翻訳」→ 翻訳結果を確認して「追加する」。タグをつけておくとカテゴリで絞り込めます。</div>
+        <div class="step-desc">「ADD」タブ → 日本語を入力 →「✨ 自動翻訳」→ 翻訳結果を確認して「追加する」。タグをつけておくとカテゴリで絞り込めます。</div>
       </div>
     </div>
     <div class="step">
       <div class="step-num">編集</div>
       <div class="step-body">
         <div class="step-title">フレーズを編集・削除する</div>
-        <div class="step-desc">「フレーズ一覧」でカードを長押し（0.5秒）→ 編集モーダルが開きます。ここから内容の変更・削除ができます。</div>
+        <div class="step-desc">「LIST」でカードを長押し（0.5秒）→ 編集モーダルが開きます。ここから内容の変更・削除ができます。</div>
       </div>
     </div>
     <div class="step">
@@ -438,7 +481,14 @@
       <div class="step-num">設定</div>
       <div class="step-body">
         <div class="step-title">言語を増やす・整理する</div>
-        <div class="step-desc">下部タブの「設定」→「言語の管理」から言語の表示/非表示を切り替え、ドラッグで並び替えができます。非表示にしてもデータは残ります。</div>
+        <div class="step-desc">下部タブの「SET」→「言語の管理」から言語の表示/非表示を切り替えられます。非表示にしてもデータは残ります。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">archive</div>
+      <div class="step-body">
+        <div class="step-title">フレーズをアーカイブする</div>
+        <div class="step-desc">カードを長押し → 編集モーダルの「ARCHIVE」ボタン → 一覧から消えてARCHIVEタブへ移動します。削除ではないので、あとから復元できます。</div>
       </div>
     </div>
   </div>
