@@ -915,7 +915,7 @@
         phrases = data.phrases;
         if (data.hiddenLangCodes) hiddenLangCodes = data.hiddenLangCodes;
         saveData(); updateHeader(); renderPhrases(); renderLangInputs(); renderSettings();
-        showToast(`${phrases.length}件のフレーズを読み込みました ✓`);
+        showToast(`${phrases.length}件のフレーズで上書きしました ✓`);
       } catch(err) { showToast('読み込みに失敗しました'); }
       event.target.value = '';
     };
