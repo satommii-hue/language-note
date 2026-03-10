@@ -112,11 +112,11 @@
   .settings-section { margin-bottom: 28px; }
   .settings-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-light); margin-bottom: 10px; }
   .lang-setting-row { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; transition: box-shadow 0.15s, opacity 0.15s; }
-  .lang-setting-row.dragging { opacity: 0.4; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
-  .lang-setting-row.drag-over { border-color: var(--accent); border-style: dashed; }
   .lang-setting-row.fixed { background: var(--tag-ja); }
-  .drag-handle { font-size: 16px; color: var(--border-dark); cursor: grab; flex-shrink: 0; padding: 2px 4px; user-select: none; touch-action: none; }
-  .drag-handle:active { cursor: grabbing; color: var(--accent); }
+  .move-btns { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
+  .move-btn { background: none; border: 1px solid var(--border); border-radius: 3px; width: 28px; height: 22px; font-size: 11px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .move-btn:active { background: var(--tag-ja); border-color: var(--accent); color: var(--accent); }
+  .move-btn:disabled { opacity: 0.2; cursor: default; }
   .lang-setting-info { flex: 1; }
   .lang-setting-name { font-size: 14px; font-weight: 500; }
   .lang-setting-code { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-muted); margin-top: 2px; }
@@ -765,100 +765,39 @@
 
     ALL_LANGS.filter(l => l.code !== 'ja').forEach(lang => {
       const isHidden = hiddenLangCodes.includes(lang.code);
+      const visibleCodes = activeLangCodes.filter(c => !hiddenLangCodes.includes(c));
+      const pos = visibleCodes.indexOf(lang.code);
+      const isFirst = pos === 0;
+      const isLast = pos === visibleCodes.length - 1;
       if (!isHidden) {
-        html += `<div class="lang-setting-row" draggable="true" data-code="${lang.code}" data-index="${visibleLangs.findIndex(l=>l.code===lang.code)}"
-          ondragstart="onDragStart(event,'${lang.code}')" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,'${lang.code}')" ondragend="onDragEnd(event)">
-          <span class="drag-handle">☰</span>
+        html += `<div class="lang-setting-row" data-code="${lang.code}">
+          <div class="move-btns">
+            <button class="move-btn" onclick="moveLang('${lang.code}',-1)" ${isFirst ? 'disabled' : ''}>▲</button>
+            <button class="move-btn" onclick="moveLang('${lang.code}',1)" ${isLast ? 'disabled' : ''}>▼</button>
+          </div>
           <span class="lang-label" style="background:${lang.bg};color:${lang.color}">${lang.label}</span>
           <div class="lang-setting-info"><div class="lang-setting-name">${lang.name}${lang.britishOnly?' (British)':''}</div><div class="lang-setting-code">${lang.bcp47} · 表示中</div></div>
           <button class="remove-btn" onclick="hideLang('${lang.code}')">非表示</button></div>`;
       } else {
-        html += `<div class="lang-setting-row" style="opacity:0.55"><span style="width:24px;flex-shrink:0"></span>
+        html += `<div class="lang-setting-row" style="opacity:0.55"><span style="width:28px;flex-shrink:0"></span>
           <span class="lang-label" style="background:${lang.bg};color:${lang.color}">${lang.label}</span>
           <div class="lang-setting-info"><div class="lang-setting-name">${lang.name}${lang.britishOnly?' (British)':''}</div><div class="lang-setting-code">${lang.bcp47} · 非表示</div></div>
           <button class="remove-btn" style="color:var(--accent);border-color:var(--accent)" onclick="showLang('${lang.code}')">表示する</button></div>`;
       }
     });
     document.getElementById('all-langs-list').innerHTML = html;
-    setupTouchDrag();
   }
 
-  let dragSrcCode = null;
-  function onDragStart(e, code) { dragSrcCode = code; e.currentTarget.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; }
-  function onDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.classList.add('drag-over'); }
-  function onDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
-  function onDrop(e, toCode) {
-    e.preventDefault(); e.currentTarget.classList.remove('drag-over');
-    if (!dragSrcCode || dragSrcCode === toCode) return;
-    const fi = activeLangCodes.indexOf(dragSrcCode), ti = activeLangCodes.indexOf(toCode);
-    if (fi === -1 || ti === -1) return;
-    activeLangCodes.splice(fi, 1); activeLangCodes.splice(ti, 0, dragSrcCode);
+  function moveLang(code, dir) {
+    const visibleCodes = activeLangCodes.filter(c => !hiddenLangCodes.includes(c));
+    const idx = visibleCodes.indexOf(code);
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= visibleCodes.length) return;
+    // activeLangCodes内での実際のインデックスを使って入れ替え
+    const ai = activeLangCodes.indexOf(code);
+    const bi = activeLangCodes.indexOf(visibleCodes[newIdx]);
+    [activeLangCodes[ai], activeLangCodes[bi]] = [activeLangCodes[bi], activeLangCodes[ai]];
     saveData(); updateHeader(); renderPhrases(); renderLangInputs(); renderSettings();
-  }
-  function onDragEnd(e) { e.currentTarget.classList.remove('dragging'); dragSrcCode = null; document.querySelectorAll('.lang-setting-row').forEach(r => r.classList.remove('drag-over')); }
-
-  function setupTouchDrag() {
-    document.querySelectorAll('.lang-setting-row[draggable="true"]').forEach(row => {
-      if (!row.querySelector('.drag-handle')) return;
-      let startY, clone, placeholder;
-
-      // ボタン類はドラッグに巻き込まない
-      row.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
-      });
-
-      row.addEventListener('touchstart', e => {
-        // ボタンへのタップは除外
-        if (e.target.closest('.remove-btn')) return;
-        e.preventDefault();
-        startY = e.touches[0].clientY;
-        const rect = row.getBoundingClientRect();
-        clone = row.cloneNode(true);
-        clone.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;z-index:999;opacity:0.9;box-shadow:0 8px 24px rgba(0,0,0,0.15);pointer-events:none;`;
-        document.body.appendChild(clone);
-        placeholder = document.createElement('div');
-        placeholder.style.cssText = `height:${rect.height}px;margin-bottom:8px;border:1px dashed var(--accent);border-radius:6px;background:#fdf6ee;`;
-        row.parentNode.insertBefore(placeholder, row);
-        row.style.display = 'none';
-      }, { passive: false });
-
-      row.addEventListener('touchmove', e => {
-        e.preventDefault(); if (!clone) return;
-        const dy = e.touches[0].clientY - startY;
-        clone.style.top = (parseFloat(clone.style.top) + dy) + 'px';
-        startY = e.touches[0].clientY;
-        [...document.querySelectorAll('.lang-setting-row[draggable="true"]')].filter(r => r !== row).forEach(r => {
-          const rb = r.getBoundingClientRect();
-          if (e.touches[0].clientY < rb.top + rb.height/2) r.parentNode.insertBefore(placeholder, r);
-          else r.parentNode.insertBefore(placeholder, r.nextSibling);
-        });
-      }, { passive: false });
-
-      row.addEventListener('touchend', e => {
-        if (!clone) return;
-        clone.remove(); clone = null;
-
-        const srcCode = row.dataset.code;
-        const parent = placeholder.parentNode;
-
-        // ① rowをplaceholderの位置に移動してからplaceholderを削除
-        parent.insertBefore(row, placeholder);
-        placeholder.remove();
-        row.style.display = '';
-
-        // ② この時点でDOMの順序が確定 → そのまま読む
-        const newOrder = [...parent.querySelectorAll('.lang-setting-row[draggable="true"]')]
-          .map(r => r.dataset.code).filter(Boolean);
-
-        // ③ activeLangCodesを更新（hidden言語は末尾に温存）
-        const hiddenCodes = activeLangCodes.filter(c => hiddenLangCodes.includes(c));
-        activeLangCodes.length = 0;
-        newOrder.forEach(c => activeLangCodes.push(c));
-        hiddenCodes.forEach(c => { if (!activeLangCodes.includes(c)) activeLangCodes.push(c); });
-
-        saveData(); updateHeader(); renderPhrases(); renderLangInputs(); renderSettings();
-      });
-    });
   }
 
   function hideLang(code) { if (!hiddenLangCodes.includes(code)) hiddenLangCodes.push(code); saveData(); updateHeader(); renderPhrases(); renderLangInputs(); renderSettings(); showToast(getLang(code).name + ' を非表示にしました'); }
