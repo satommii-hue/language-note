@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOST IN TRANSLATION — How to Use</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f3;
+    --surface: #ffffff;
+    --border: #e8e2d5;
+    --border-dark: #c8bfaa;
+    --text: #2c2418;
+    --text-muted: #8c7e6a;
+    --text-light: #b5a898;
+    --accent: #c4873a;
+    --tag-ja: #f0ece4;
+    --green: #2d5a1b;
+    --green-bg: #e8f3e8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', 'Noto Sans JP', sans-serif;
+    font-weight: 300;
+    line-height: 1.8;
+    padding-bottom: 80px;
+  }
+
+  /* ── Header ── */
+  .hero {
+    background: var(--text);
+    color: var(--bg);
+    padding: 48px 24px 40px;
+  }
+  .hero-mono {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+  .hero-sub {
+    font-size: 13px;
+    color: #a09080;
+    line-height: 1.7;
+  }
+
+  /* ── Nav ── */
+  .toc {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border-dark);
+    padding: 14px 24px;
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .toc::-webkit-scrollbar { display: none; }
+  .toc a {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    text-decoration: none;
+    white-space: nowrap;
+    padding: 4px 0;
+    border-bottom: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  .toc a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── Sections ── */
+  .section {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 40px 24px 0;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 6px;
+  }
+
+  .section h2 {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  /* ── Step cards ── */
+  .steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .step-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--accent);
+    background: #fdf6ee;
+    border: 1px solid #e8c898;
+    border-radius: 4px;
+    padding: 3px 8px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-body { flex: 1; }
+  .step-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .step-desc { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+  .step-desc a { color: var(--accent); }
+
+  /* ── Tip / Note ── */
+  .note {
+    background: var(--tag-ja);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+  }
+  .note-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .note p { font-size: 13px; color: var(--text-muted); margin: 0; }
+
+  .good {
+    background: var(--green-bg);
+    border-left: 3px solid var(--green);
+  }
+  .good .note-label { color: var(--green); }
+
+  /* ── Feature list ── */
+  .feature-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+  .feature-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .feature-icon { font-size: 18px; flex-shrink: 0; }
+  .feature-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  .feature-text strong { color: var(--text); font-weight: 500; }
+
+  /* ── Divider ── */
+  .divider {
+    max-width: 600px;
+    margin: 40px auto 0;
+    padding: 0 24px;
+    border: none;
+    border-top: 1px dashed var(--border-dark);
+  }
+
+  /* ── URL block ── */
+  .url-block {
+    background: var(--text);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .url-block a {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    text-decoration: none;
+    word-break: break-all;
+  }
+  .url-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: #605040;
+    flex-shrink: 0;
+  }
+
+  /* ── Storage visual ── */
+  .storage-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .storage-label-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+  .bar-track {
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .bar-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 4px;
+    width: 0.01%;
+  }
+  .storage-note { font-size: 11px; color: var(--text-light); }
+
+  /* ── Footer ── */
+  .footer {
+    max-width: 600px;
+    margin: 60px auto 0;
+    padding: 24px;
+    border-top: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-light);
+    letter-spacing: 0.08em;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-mono">// MANUAL · LOST IN TRANSLATION</div>
+  <h1>LOST IN TRANSLATION<br>User Guide</h1>
+  <div class="hero-sub">Keep the words you collect — forever.<br>A language notebook with audio playback.<br><br>Setup takes about 10 minutes.</div>
+</div>
+
+<nav class="toc">
+  <a href="#about">About</a>
+  <a href="#longevity">Longevity</a>
+  <a href="#start">Getting Started</a>
+  <a href="#deepl">Translation API</a>
+  <a href="#backup">Data & Backup</a>
+  <a href="#features">Features</a>
+  <a href="#offline">Offline Use</a>
+</nav>
+
+<!-- ── About ── -->
+<div class="section" id="about">
+  <div class="section-label">01</div>
+  <h2>About this app</h2>
+
+  <div class="feature-grid">
+    <div class="feature-item">
+      <div class="feature-icon">📝</div>
+      <div class="feature-text"><strong>Save phrases</strong><br>Type a phrase in Japanese and it gets auto-translated into all your chosen languages</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🔊</div>
+      <div class="feature-text"><strong>Hear pronunciation</strong><br>Tap any language button to hear it read aloud</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🌍</div>
+      <div class="feature-text"><strong>35 languages supported</strong><br>EN (UK/US) · FR · DE · IT · DA · SV · NO · FI · NL · PL · CS · ES · PT (EU/BR) · RU · AR · ID · VI · NE · KO · ZH (simplified/traditional) · TH · BG · EL · ET · HU · LT · LV · RO · SK · SL · TR · UK · HE</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">📱</div>
+      <div class="feature-text"><strong>Works on any device</strong><br>Just open it in a browser — no installation needed</div>
+    </div>
+  </div>
+
+  <div class="note">
+    <div class="note-label">NOTE</div>
+    <p>Data is stored in your browser on this device. To sync between PC and phone, use the export/import feature.</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── Longevity ── -->
+<div class="section" id="longevity">
+  <div class="section-label">01 — B</div>
+  <h2>Will it keep working?</h2>
+
+  <p>The app runs on four services.</p>
+
+  <div class="feature-grid">
+    <div class="feature-item">
+      <div class="feature-icon">▲</div>
+      <div class="feature-text"><strong>Vercel</strong><br>Hosts the app. A free hosting service used by developers worldwide</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🐙</div>
+      <div class="feature-text"><strong>GitHub</strong><br>Stores the code. Operated by Microsoft</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🌐</div>
+      <div class="feature-text"><strong>DeepL</strong><br>Powers auto-translation. The only service here with a paid tier — but the free plan is more than enough</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">☁️</div>
+      <div class="feature-text"><strong>Cloud storage</strong><br>For backups. Use Google Drive, iCloud, Dropbox — whatever you prefer</div>
+    </div>
+  </div>
+
+  <div class="note good">
+    <div class="note-label">Current assessment</div>
+    <p>The chances of this going away are close to zero. Vercel and GitHub are industry standards — they're not going anywhere suddenly.</p>
+  </div>
+
+  <div class="note">
+    <div class="note-label">Browser compatibility</div>
+    <p>The app runs on plain HTML and JavaScript with no exotic dependencies, so it's designed to work on older browsers too. The one exception: audio playback uses the browser's Speech Synthesis API, so on very old browsers you might see "audio not supported." Everything else — adding phrases, editing, tags, export — works fine even on a five-year-old phone.</p>
+  </div>
+
+  <div class="note" style="border-left-color: var(--danger, #c0392b);">
+    <div class="note-label" style="color:var(--danger, #c0392b)">Risk of data loss</div>
+    <p>The app itself won't delete your data, but it can disappear if you clear your browser cache, switch devices, or reinstall the app. Regular exports are recommended.</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<div class="section" id="start">
+  <div class="section-label">02</div>
+  <h2>Getting started</h2>
+
+  <div class="url-block">
+    <span class="url-label">URL</span>
+    <a href="https://language-note.vercel.app/" target="_blank">
+      language-note.vercel.app
+    </a>
+  </div>
+
+  <p>Just open the URL above in any browser. No installation required.</p>
+
+  <div class="note good">
+    <div class="note-label">Add to Home Screen on iPhone</div>
+    <p>Open in Safari → tap the Share button (square with arrow) at the bottom → "Add to Home Screen" → use it like a native app</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── DeepL ── -->
+<div class="section" id="deepl">
+  <div class="section-label">03</div>
+  <h2>Setting up translation</h2>
+
+  <p>Auto-translation requires a free DeepL account. The free tier covers 500,000 characters per month — you're very unlikely to hit that limit with everyday use.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-body">
+        <div class="step-title">Create a DeepL account</div>
+        <div class="step-desc">Go to <a href="https://www.deepl.com/en/pro-api" target="_blank">deepl.com/en/pro-api</a> and click "Get API key for free." Register with your email address. A credit card is required, but you won't be charged within the free 500K character limit — and everyday use won't come close to that.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-body">
+        <div class="step-title">Copy your API key</div>
+        <div class="step-desc">After logging in, go to "Account" → "API Keys." Copy the key shown (a long string of letters and numbers).</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-body">
+        <div class="step-title">Enter it in the app</div>
+        <div class="step-desc">Open the app → tap "SET" in the bottom tab bar → "DeepL API Key" → "Set key" → paste the key and save.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <div class="note-label">NOTE</div>
+    <p>Your API key is stored only in your browser on this device. No one else can see it. You'll need to re-enter it if you switch devices.</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── Backup ── -->
+<div class="section" id="backup">
+  <div class="section-label">04</div>
+  <h2>Backup & syncing data</h2>
+
+  <p>Phrase data is stored in your browser. To use the same data on multiple devices, or to back it up, use export/import.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">export</div>
+      <div class="step-body">
+        <div class="step-title">Export → save to Google Drive</div>
+        <div class="step-desc">Tap "SET" in the bottom tab → "Export JSON file" → choose Google Drive as the save location (Chrome will open a save dialog). In Safari, the file saves to Downloads — move it to Google Drive from there.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">import</div>
+      <div class="step-body">
+        <div class="step-title">Google Drive → Import</div>
+        <div class="step-desc">Download the JSON file from Google Drive → in the app, tap "Select JSON file" and choose it. Data will be added to your existing phrases — duplicates are skipped automatically.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <div class="note-label">NOTE</div>
+    <p>Any file storage works — Google Drive, iCloud, Dropbox, OneDrive, or wherever you prefer.</p>
+  </div>
+
+  <div class="storage-bar">
+    <div class="storage-label-row">
+      <span>Google Drive free storage</span>
+      <span>15 GB</span>
+    </div>
+    <div class="bar-track">
+      <div class="bar-fill" style="width:0.01%"></div>
+    </div>
+    <div class="storage-note">Each phrase is roughly 1KB. Even 1,000 phrases takes less than 1MB. Storage is basically a non-issue.</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── Features ── -->
+<div class="section" id="features">
+  <div class="section-label">05</div>
+  <h2>How to use it</h2>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">add</div>
+      <div class="step-body">
+        <div class="step-title">Add a phrase</div>
+        <div class="step-desc">Go to the "ADD" tab → type in any language you like → tap "✨ Auto-translate" → review the results → tap "Add." You can attach tags to filter by category later.</div>
+      </div>
+    </div>
+    <div class="note" style="margin-top: -4px; margin-bottom: 12px;">
+      <div class="note-label">NEPALI</div>
+      <p>Nepali (NE) is not supported by DeepL, so auto-translation won't work for that language. Translations need to be entered manually.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">edit</div>
+      <div class="step-body">
+        <div class="step-title">Edit or delete a phrase</div>
+        <div class="step-desc">In the "LIST" tab, long-press a card (0.5 sec) → an edit modal opens where you can change content or delete the phrase.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">view</div>
+      <div class="step-body">
+        <div class="step-title">See translations · hear audio</div>
+        <div class="step-desc">Tap a card to expand its translations. Use the ▶ button next to each language to play audio.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">settings</div>
+      <div class="step-body">
+        <div class="step-title">Manage languages</div>
+        <div class="step-desc">Tap "SET" in the bottom tab → "Manage languages" to show or hide languages. Hiding a language doesn't delete its data.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">archive</div>
+      <div class="step-body">
+        <div class="step-title">Archive a phrase</div>
+        <div class="step-desc">Long-press a card → tap "ARCHIVE" in the edit modal → the phrase moves to the ARCHIVE tab and disappears from the main list. It's not deleted, so you can restore it anytime.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── Offline ── -->
+<div class="section" id="offline">
+  <div class="section-label">06</div>
+  <h2>Using it offline</h2>
+
+  <p>The app isn't fully offline-capable, but there's a lot you can still do without a connection — in airplane mode or in the middle of nowhere.</p>
+
+  <div class="feature-grid">
+    <div class="feature-item">
+      <div class="feature-icon">✅</div>
+      <div class="feature-text"><strong>Browsing phrases</strong><br>All saved phrases are accessible. Data lives on your device — no connection needed</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">✅</div>
+      <div class="feature-text"><strong>Audio playback</strong><br>Uses the browser's built-in speech engine — works offline</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">✅</div>
+      <div class="feature-text"><strong>Editing & deleting</strong><br>Editing existing phrases works offline too</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">❌</div>
+      <div class="feature-text"><strong>Auto-translation (DeepL)</strong><br>Translation requires an internet connection and won't work offline</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">⚠️</div>
+      <div class="feature-text"><strong>Loading the app itself</strong><br>It might load from browser cache, but that's not guaranteed. If you know you'll need it offline — before a trip, for example — open it online at least once beforehand</div>
+    </div>
+  </div>
+
+  <div class="note good">
+    <div class="note-label">Tip for travel</div>
+    <p>Add and translate your phrases at home over Wi-Fi. Once they're saved, you can browse and play them anywhere — on the plane, no signal, wherever.</p>
+  </div>
+</div>
+
+<div class="footer">
+  LOST IN TRANSLATION · made with ♡ · 2026
+</div>
+
+</body>
+</html>
