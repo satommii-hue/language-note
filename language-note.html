@@ -386,11 +386,13 @@
       let pressTimer = null;
       let longPressed = false;
       let touchHandled = false;
+      let moved = false;
       let startX = 0, startY = 0;
 
       const startPress = (e) => {
         if (e.type === 'mousedown' && touchHandled) return;
         longPressed = false;
+        moved = false;
         if (e.touches) { startX = e.touches[0].clientX; startY = e.touches[0].clientY; }
         pressTimer = setTimeout(() => {
           longPressed = true;
@@ -399,20 +401,23 @@
         }, 500);
       };
       const cancelPress = (e) => {
-        if (!pressTimer) return;
         if (e.touches) {
           const dx = Math.abs(e.touches[0].clientX - startX);
           const dy = Math.abs(e.touches[0].clientY - startY);
-          if (dx > 8 || dy > 8) { clearTimeout(pressTimer); pressTimer = null; }
+          if (dx > 8 || dy > 8) {
+            moved = true;
+            if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+          }
         } else {
-          clearTimeout(pressTimer); pressTimer = null;
+          if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
         }
       };
       const endPressTouch = () => {
         touchHandled = true;
         if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
-        if (!longPressed) { card.classList.toggle('expanded'); }
+        if (!longPressed && !moved) { card.classList.toggle('expanded'); }
         longPressed = false;
+        moved = false;
         setTimeout(() => { touchHandled = false; }, 500);
       };
       const endPressMouse = () => {
@@ -680,11 +685,13 @@
       let pressTimer = null;
       let longPressed = false;
       let touchHandled = false;
+      let moved = false;
       let startX = 0, startY = 0;
 
       const startPress = (e) => {
         if (e.type === 'mousedown' && touchHandled) return;
         longPressed = false;
+        moved = false;
         if (e.touches) { startX = e.touches[0].clientX; startY = e.touches[0].clientY; }
         pressTimer = setTimeout(() => {
           longPressed = true; pressTimer = null;
@@ -692,20 +699,23 @@
         }, 500);
       };
       const cancelPress = (e) => {
-        if (!pressTimer) return;
         if (e.touches) {
           const dx = Math.abs(e.touches[0].clientX - startX);
           const dy = Math.abs(e.touches[0].clientY - startY);
-          if (dx > 8 || dy > 8) { clearTimeout(pressTimer); pressTimer = null; }
+          if (dx > 8 || dy > 8) {
+            moved = true;
+            if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+          }
         } else {
-          clearTimeout(pressTimer); pressTimer = null;
+          if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
         }
       };
       const endPressTouch = () => {
         touchHandled = true;
         if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
-        if (!longPressed) { card.classList.toggle('expanded'); }
+        if (!longPressed && !moved) { card.classList.toggle('expanded'); }
         longPressed = false;
+        moved = false;
         setTimeout(() => { touchHandled = false; }, 500);
       };
       const endPressMouse = () => {
