@@ -455,6 +455,12 @@
       langsHtml += '</div>';
 
       card.innerHTML = `<div class="phrase-ja"><span class="phrase-ja-text">${phrase.ja}${tagsHtml}</span><button class="speak-btn" onmousedown="event.stopPropagation()" onmouseup="event.stopPropagation()" ontouchstart="event.stopPropagation()" ontouchend="event.stopPropagation()" onclick="event.stopPropagation();speakBtn(this,'${escapeAttr(phrase.ja)}','ja-JP-direct')">▶</button></div>${langsHtml}`;
+      card.querySelectorAll('.speak-btn').forEach(btn => {
+        const stop = (e) => e.stopPropagation();
+        btn.addEventListener('touchstart', stop, { passive: true });
+        btn.addEventListener('touchend', stop);
+        btn.addEventListener('touchmove', stop, { passive: true });
+      });
       container.appendChild(card);
     });
 
@@ -757,6 +763,12 @@
       langsHtml += '</div>';
 
       card.innerHTML = `<div class="phrase-ja"><span class="phrase-ja-text">${phrase.ja}${tagsHtml}</span><button class="speak-btn" onmousedown="event.stopPropagation()" onmouseup="event.stopPropagation()" ontouchstart="event.stopPropagation()" ontouchend="event.stopPropagation()" onclick="event.stopPropagation();speakBtn(this,'${escapeAttr(phrase.ja)}','ja-JP-direct')">▶</button></div>${langsHtml}`;
+      card.querySelectorAll('.speak-btn').forEach(btn => {
+        const stop = (e) => e.stopPropagation();
+        btn.addEventListener('touchstart', stop, { passive: true });
+        btn.addEventListener('touchend', stop);
+        btn.addEventListener('touchmove', stop, { passive: true });
+      });
       container.appendChild(card);
     });
   }
