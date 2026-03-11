@@ -182,6 +182,7 @@
       <input type="text" id="input-tags" class="form-input" placeholder="例：あいさつ 毎日 重要">
     </div>
     <button class="btn-primary" onclick="addPhrase()">追加する</button>
+    <button onclick="clearAddFields()" style="width:100%;padding:7px;background:none;border:none;font-family:'DM Mono',monospace;font-size:10px;color:var(--text-light);letter-spacing:0.1em;cursor:pointer;text-align:center;margin-top:2px">CLEAR</button>
     <div class="voice-note">🔊 発音はブラウザの音声合成を使用。Safari・Chromeで動作します。</div>
   </div>
 </div>
@@ -575,6 +576,14 @@
         </div>
         <input type="text" id="input-${lang.code}" class="form-input" oninput="this.classList.remove('input-translated')">
       </div>`).join('');
+  }
+
+  function clearAddFields() {
+    document.getElementById('input-ja').value = '';
+    const tagsEl = document.getElementById('input-tags'); if (tagsEl) tagsEl.value = '';
+    getActiveLangs().forEach(lang => { const el = document.getElementById('input-' + lang.code); if (el) { el.value = ''; el.classList.remove('input-translated'); } });
+    window._pendingTranslations = {};
+    showToast('クリアしました');
   }
 
   function addPhrase() {
