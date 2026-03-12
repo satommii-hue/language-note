@@ -224,8 +224,8 @@
 </div>
 
 <!-- DeepL APIキー設定モーダル -->
-<div class="modal-overlay" id="apikey-modal">
-  <div class="modal">
+<div class="modal-overlay" id="apikey-modal" onclick="closeApiKeyModal()">
+  <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title">DeepL APIキーの設定</div>
     <div class="modal-sub">翻訳機能を使うにはDeepL APIキーが必要です。<a href="https://www.deepl.com/ja/pro-api" target="_blank" style="color:var(--accent)">DeepLで無料取得 →</a></div>
     <input type="text" id="apikey-input" class="form-input" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx" style="margin-bottom:8px;font-family:'DM Mono',monospace;font-size:13px;">
@@ -239,8 +239,8 @@
 </div>
 
 <!-- Edit phrase modal -->
-<div class="modal-overlay" id="edit-modal">
-  <div class="modal">
+<div class="modal-overlay" id="edit-modal" onclick="closeEditModal()">
+  <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title">フレーズを編集</div>
     <div class="modal-sub" id="edit-modal-category"></div>
     <div id="edit-fields"></div>
@@ -260,8 +260,8 @@
 </div>
 
 <!-- Archive phrase modal -->
-<div class="modal-overlay" id="archive-modal">
-  <div class="modal">
+<div class="modal-overlay" id="archive-modal" onclick="closeArchiveModal()">
+  <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title">アーカイブ済みフレーズ</div>
     <div class="modal-sub" id="archive-modal-phrase"></div>
     <div class="modal-actions">
